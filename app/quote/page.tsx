@@ -1,5 +1,6 @@
 "use client"
 
+import { Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import Link from "next/link"
@@ -7,7 +8,7 @@ import Image from "next/image"
 import { tyreData } from "@/lib/tyre-data"
 import { CheckCircle2, ClipboardList, Coins, SearchCheck, CalendarCheck, ChevronRight } from "lucide-react"
 
-export default function QuotePage() {
+function QuoteContent() {
     const searchParams = useSearchParams()
     const router = useRouter()
     const tyreId = searchParams.get("tyreId")
@@ -174,5 +175,20 @@ export default function QuotePage() {
                 </div>
             </main>
         </div>
+    )
+}
+
+export default function QuotePage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-[#FFF1F2]">
+                <div className="animate-pulse flex flex-col items-center">
+                    <div className="h-8 w-32 bg-gray-200 rounded mb-4"></div>
+                    <div className="h-4 w-48 bg-gray-200 rounded"></div>
+                </div>
+            </div>
+        }>
+            <QuoteContent />
+        </Suspense>
     )
 }
