@@ -55,11 +55,11 @@ export function Footer() {
                   Home
                 </Link>
               </li>
-              {/* <li>
+              <li>
                 <Link href="/search" className="text-[#9CA3AF] hover:text-white transition-colors">
                   Browse Tyres
                 </Link>
-              </li> */}
+              </li>
               <li>
                 <Link href="#" className="text-[#9CA3AF] hover:text-white transition-colors">
                   Our Services

@@ -50,12 +50,12 @@ export function Header() {
             <Link href="/" className="text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium">
               Home
             </Link>
-            {/* <Link href="/search" className="text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium">
+            <Link href="/search" className="text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium">
               Browse Tyres
-            </Link> */}
-            {/* <Link href="#" className="text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium">
+            </Link>
+            <Link href="#" className="text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium">
               Services
-            </Link> */}
+            </Link>
             <Link href="#" className="text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium">
               About
             </Link>
@@ -159,9 +159,9 @@ export function Header() {
               <Link href="/" className="block px-4 py-2 text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg">
                 Home
               </Link>
-              {/* <Link href="/search" className="block px-4 py-2 text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg">
+              <Link href="/search" className="block px-4 py-2 text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg">
                 Browse Tyres
-              </Link> */}
+              </Link>
               <Link href="#" className="block px-4 py-2 text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg">
                 Services
               </Link>
