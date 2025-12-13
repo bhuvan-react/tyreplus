@@ -49,9 +49,9 @@ export function RequestCard({ request }: RequestCardProps) {
                 <Button className="bg-[#10B981] hover:bg-[#059669] text-white font-medium px-6">
                     View Quotes
                 </Button>
-                <Button variant="outline" className="text-[#059669] border-[#059669] hover:bg-green-50">
+                {/* <Button variant="outline" className="text-[#059669] border-[#059669] hover:bg-green-50">
                     Contact Dealer
-                </Button>
+                </Button> */}
             </div>
         </div>
     )

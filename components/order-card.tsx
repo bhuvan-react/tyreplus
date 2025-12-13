@@ -85,9 +85,9 @@ export function OrderCard({ order }: OrderCardProps) {
                 <div className="text-sm text-muted-foreground">
                     <span className="font-medium text-foreground">Ship to:</span> {order.shippingAddress.name}
                 </div>
-                <Button variant="outline" size="sm" className="gap-1">
+                {/* <Button variant="outline" size="sm" className="gap-1">
                     View Details <ChevronRight className="h-4 w-4" />
-                </Button>
+                </Button> */}
             </CardFooter>
         </Card>
     )
