@@ -60,7 +60,7 @@ export function Footer() {
                   Browse Tyres
                 </Link>
               </li> */}
-              <li>
+              {/* <li>
                 <Link href="#" className="text-[#9CA3AF] hover:text-white transition-colors">
                   Our Services
                 </Link>
@@ -69,7 +69,7 @@ export function Footer() {
                 <Link href="#" className="text-[#9CA3AF] hover:text-white transition-colors">
                   Sell Your Tyres
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="#" className="text-[#9CA3AF] hover:text-white transition-colors">
                   Become a Partner
