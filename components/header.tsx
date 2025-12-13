@@ -46,20 +46,14 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-8">
+          {/* <nav className="hidden md:flex items-center gap-8">
             <Link href="/" className="text-[#6B7280] hover:text-[#0D9488] transition-colors font-medium">
               Home
-            </Link>
-            {/* <Link href="/search" className="text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium">
-              Browse Tyres
-            </Link> */}
-            <Link href="#" className="text-[#6B7280] hover:text-[#0D9488] transition-colors font-medium">
-              Services
             </Link>
             <Link href="#" className="text-[#6B7280] hover:text-[#0D9488] transition-colors font-medium">
               About
             </Link>
-          </nav>
+          </nav> */}
 
           {/* Auth Section */}
           <div className="hidden md:flex items-center gap-4">
@@ -158,12 +152,6 @@ export function Header() {
             <nav className="px-4 py-4 space-y-2">
               <Link href="/" className="block px-4 py-2 text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg">
                 Home
-              </Link>
-              {/* <Link href="/search" className="block px-4 py-2 text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg">
-                Browse Tyres
-              </Link> */}
-              <Link href="#" className="block px-4 py-2 text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg">
-                Services
               </Link>
               <Link href="#" className="block px-4 py-2 text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg">
                 About
