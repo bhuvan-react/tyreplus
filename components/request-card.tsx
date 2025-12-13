@@ -37,7 +37,7 @@ export function RequestCard({ request }: RequestCardProps) {
                 </div>
                 <div>
                     <p className="text-xs text-gray-500 mb-1">Best Quote:</p>
-                    <p className="font-bold text-[#DC2626]">₹{request.bestQuote.toLocaleString()}</p>
+                    <p className="font-bold text-[#0D9488]">₹{request.bestQuote.toLocaleString()}</p>
                 </div>
                 <div>
                     <p className="text-xs text-gray-500 mb-1">Requested:</p>

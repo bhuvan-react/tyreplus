@@ -120,7 +120,7 @@ export function OtpModal({ isOpen, onClose, onSuccess }: OtpModalProps) {
             className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden"
           >
             {/* Header */}
-            <div className="relative bg-[#FEF2F2] px-6 py-8 text-center">
+            <div className="relative bg-[#F0FDFA] px-6 py-8 text-center">
               <button
                 onClick={() => {
                   resetModal()
@@ -130,7 +130,7 @@ export function OtpModal({ isOpen, onClose, onSuccess }: OtpModalProps) {
               >
                 <X className="w-5 h-5 text-[#6B7280]" />
               </button>
-              <div className="w-16 h-16 bg-[#DC2626] rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#14B8A6] to-[#0D9488] rounded-full flex items-center justify-center mx-auto mb-4">
                 {step === "success" ? (
                   <Check className="w-8 h-8 text-white" />
                 ) : (
@@ -166,18 +166,17 @@ export function OtpModal({ isOpen, onClose, onSuccess }: OtpModalProps) {
                         value={phone}
                         onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
                         placeholder="Enter mobile number"
-                        className="w-full pl-14 pr-4 py-3 border border-[#D1D5DB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#DC2626] focus:border-transparent"
+                        className="w-full pl-14 pr-4 py-3 border border-[#D1D5DB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:border-transparent"
                         autoFocus
                       />
                     </div>
                     <button
                       onClick={handlePhoneSubmit}
                       disabled={phone.length !== 10 || isLoading}
-                      className={`w-full mt-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
-                        phone.length === 10 && !isLoading
-                          ? "bg-[#DC2626] text-white hover:bg-[#B91C1C]"
-                          : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed"
-                      }`}
+                      className={`w-full mt-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${phone.length === 10 && !isLoading
+                        ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white hover:opacity-90"
+                        : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed"
+                        }`}
                     >
                       {isLoading ? (
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -210,18 +209,17 @@ export function OtpModal({ isOpen, onClose, onSuccess }: OtpModalProps) {
                           value={digit}
                           onChange={(e) => handleOtpChange(index, e.target.value)}
                           onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                          className="w-12 h-12 text-center text-xl font-semibold border border-[#D1D5DB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#DC2626] focus:border-transparent"
+                          className="w-12 h-12 text-center text-xl font-semibold border border-[#D1D5DB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:border-transparent"
                         />
                       ))}
                     </div>
                     <button
                       onClick={handleOtpSubmit}
                       disabled={otp.join("").length !== 6 || isLoading}
-                      className={`w-full mt-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
-                        otp.join("").length === 6 && !isLoading
-                          ? "bg-[#DC2626] text-white hover:bg-[#B91C1C]"
-                          : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed"
-                      }`}
+                      className={`w-full mt-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${otp.join("").length === 6 && !isLoading
+                        ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white hover:opacity-90"
+                        : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed"
+                        }`}
                     >
                       {isLoading ? (
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -236,7 +234,7 @@ export function OtpModal({ isOpen, onClose, onSuccess }: OtpModalProps) {
                       <button
                         onClick={handleResendOtp}
                         disabled={timer > 0 || isLoading}
-                        className={`text-sm ${timer > 0 ? "text-[#9CA3AF]" : "text-[#DC2626] hover:underline"}`}
+                        className={`text-sm ${timer > 0 ? "text-[#9CA3AF]" : "text-[#0D9488] hover:underline"}`}
                       >
                         {timer > 0 ? `Resend OTP in ${timer}s` : "Resend OTP"}
                       </button>

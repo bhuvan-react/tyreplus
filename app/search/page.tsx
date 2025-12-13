@@ -1,17 +1,29 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { Suspense, useState, useMemo, useEffect } from "react"
 import Link from "next/link"
-import { useAppSelector } from "@/lib/hooks"
+import { useSearchParams } from "next/navigation"
+import { useAppSelector, useAppDispatch } from "@/lib/hooks"
+import { setVehicleType, setMake, setModel } from "@/lib/store"
 import { FiltersSidebar } from "@/components/filters-sidebar"
 import { TyreCard } from "@/components/tyre-card"
 import { TyreCardSkeleton } from "@/components/tyre-card-skeleton"
 import { MobileFiltersSheet } from "@/components/mobile-filters-sheet"
-import { tyreData } from "@/lib/tyre-data"
+import { tyreService } from "@/lib/services/tyre-service"
+import { type Tyre } from "@/lib/tyre-data"
 import { ChevronRight, SlidersHorizontal, Grid, List } from "lucide-react"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
-export default function SearchPage() {
+function SearchContent() {
   const search = useAppSelector((state) => state.search)
+  const dispatch = useAppDispatch()
+  const searchParams = useSearchParams()
 
   // Filter states
   const [tyreType, setTyreType] = useState<"new" | "used" | "all">("all")
@@ -24,6 +36,40 @@ export default function SearchPage() {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid")
   const [isLoading, setIsLoading] = useState(true)
   const [visibleCount, setVisibleCount] = useState(12)
+  const [tyres, setTyres] = useState<Tyre[]>([])
+
+  // Fetch tyres
+  useEffect(() => {
+    const fetchTyres = async () => {
+      setIsLoading(true)
+      try {
+        const response = await tyreService.getAllTyres()
+        setTyres(response.data)
+      } catch (error) {
+        console.error("Failed to fetch tyres:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+    fetchTyres()
+  }, [])
+
+  // Handle query params
+  useEffect(() => {
+    const make = searchParams.get("make")
+    const model = searchParams.get("model")
+    const brand = searchParams.get("brand")
+
+    if (make && model) {
+      dispatch(setVehicleType("4W"))
+      dispatch(setMake(make))
+      dispatch(setModel(model))
+    }
+
+    if (brand) {
+      setSelectedBrands([brand])
+    }
+  }, [searchParams, dispatch])
 
   // Simulate loading on mount and filter change
   useEffect(() => {
@@ -33,11 +79,11 @@ export default function SearchPage() {
       setIsLoading(false)
     }, 1500)
     return () => clearTimeout(timer)
-  }, [tyreType, selectedBrands, selectedPriceRange, minRating, sortBy])
+  }, [tyreType, selectedBrands, selectedPriceRange, minRating, sortBy, search.make, search.model])
 
   // Filter and sort tyres
   const filteredTyres = useMemo(() => {
-    let result = [...tyreData]
+    let result = [...tyres]
 
     // Filter by type
     if (tyreType !== "all") {
@@ -75,7 +121,7 @@ export default function SearchPage() {
     }
 
     return result
-  }, [tyreType, selectedBrands, selectedPriceRange, minRating, sortBy])
+  }, [tyreType, selectedBrands, selectedPriceRange, minRating, sortBy, tyres])
 
   const vehicleString = search.vehicleType
     ? `${search.make || ""} ${search.model || ""} ${search.variant || ""}`.trim()
@@ -87,7 +133,7 @@ export default function SearchPage() {
       <div className="bg-white border-b border-[#E5E7EB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <nav className="flex items-center gap-2 text-sm">
-            <Link href="/" className="text-[#6B7280] hover:text-[#DC2626] transition-colors">
+            <Link href="/" className="text-[#6B7280] hover:text-[#0D9488] transition-colors">
               Home
             </Link>
             <ChevronRight className="w-4 h-4 text-[#9CA3AF]" />
@@ -95,7 +141,7 @@ export default function SearchPage() {
             {search.vehicleType && (
               <>
                 <ChevronRight className="w-4 h-4 text-[#9CA3AF]" />
-                <span className="text-[#DC2626] font-medium">{vehicleString}</span>
+                <span className="text-[#0D9488] font-medium">{vehicleString}</span>
               </>
             )}
             {search.pincode && (
@@ -124,41 +170,42 @@ export default function SearchPage() {
             {/* Mobile Filter Button */}
             <button
               onClick={() => setShowFilters(true)}
-              className="lg:hidden flex items-center gap-2 px-4 py-2 bg-white border border-[#E5E7EB] rounded-xl hover:border-[#DC2626] transition-colors"
+              className="lg:hidden flex items-center gap-2 px-4 py-2 bg-white border border-[#E5E7EB] rounded-xl hover:border-[#0D9488] transition-colors"
             >
               <SlidersHorizontal className="w-5 h-5 text-[#6B7280]" />
               <span className="text-[#1F2937] font-medium">Filters</span>
             </button>
 
             {/* View Mode Toggle */}
-            <div className="hidden sm:flex items-center bg-white border border-[#E5E7EB] rounded-xl p-1">
+            {/* <div className="hidden sm:flex items-center bg-white border border-[#E5E7EB] rounded-xl p-1">
               <button
                 onClick={() => setViewMode("grid")}
-                className={`p-2 rounded-lg transition-colors ${viewMode === "grid" ? "bg-[#DC2626] text-white" : "text-[#6B7280] hover:bg-[#F9FAFB]"
+                className={`p-2 rounded-lg transition-colors ${viewMode === "grid" ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white" : "text-[#6B7280] hover:bg-[#F9FAFB]"
                   }`}
               >
                 <Grid className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode("list")}
-                className={`p-2 rounded-lg transition-colors ${viewMode === "list" ? "bg-[#DC2626] text-white" : "text-[#6B7280] hover:bg-[#F9FAFB]"
+                className={`p-2 rounded-lg transition-colors ${viewMode === "list" ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white" : "text-[#6B7280] hover:bg-[#F9FAFB]"
                   }`}
               >
                 <List className="w-5 h-5" />
               </button>
-            </div>
+            </div> */}
 
             {/* Sort Dropdown */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-              className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-xl text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#DC2626] focus:border-transparent"
-            >
-              <option value="popular">Most Popular</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Highest Rated</option>
-            </select>
+            <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+              <SelectTrigger className="w-[180px] bg-white border-[#E5E7EB] rounded-xl text-[#1F2937]">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="popular">Most Popular</SelectItem>
+                <SelectItem value="price-low">Price: Low to High</SelectItem>
+                <SelectItem value="price-high">Price: High to Low</SelectItem>
+                <SelectItem value="rating">Highest Rated</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
@@ -210,7 +257,7 @@ export default function SearchPage() {
                   <div className="mt-8 flex justify-center">
                     <button
                       onClick={() => setVisibleCount((prev) => prev + 12)}
-                      className="px-6 py-3 bg-white border border-[#E5E7EB] text-[#1F2937] font-semibold rounded-xl hover:border-[#DC2626] hover:text-[#DC2626] transition-colors shadow-sm"
+                      className="px-4 py-2 bg-white border border-[#E5E7EB] rounded-xl text-[#1F2937] focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:border-transparent hover:border-[#0D9488] hover:text-[#0D9488] transition-colors shadow-sm"
                     >
                       Load More Tyres
                     </button>
@@ -229,7 +276,7 @@ export default function SearchPage() {
                     setSelectedPriceRange(null)
                     setMinRating(0)
                   }}
-                  className="px-6 py-3 bg-[#DC2626] text-white font-semibold rounded-xl hover:bg-[#B91C1C] transition-colors"
+                  className="px-6 py-3 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white font-semibold rounded-xl hover:opacity-90 transition-opacity"
                 >
                   Clear All Filters
                 </button>
@@ -254,5 +301,20 @@ export default function SearchPage() {
         resultCount={filteredTyres.length}
       />
     </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-[#F9FAFB]">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="h-8 w-32 bg-gray-200 rounded mb-4"></div>
+          <div className="h-4 w-48 bg-gray-200 rounded"></div>
+        </div>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   )
 }

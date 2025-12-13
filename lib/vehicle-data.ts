@@ -1,5 +1,17 @@
+export type VehicleType = "2W" | "3W" | "4W"
+
+interface VehicleSchema {
+  makes: {
+    [make: string]: {
+      models: {
+        [model: string]: string[]
+      }
+    }
+  }
+}
+
 // Vehicle data for cascading dropdowns
-export const vehicleData = {
+export const vehicleData: Record<VehicleType, VehicleSchema> = {
   "2W": {
     makes: {
       Hero: {
@@ -148,7 +160,7 @@ export const vehicleData = {
   },
 }
 
-export type VehicleType = "2W" | "3W" | "4W"
+
 
 export function getMakes(vehicleType: VehicleType): string[] {
   return Object.keys(vehicleData[vehicleType]?.makes || {})

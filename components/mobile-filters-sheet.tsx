@@ -74,7 +74,7 @@ export function MobileFiltersSheet({
               {/* Apply Button */}
               <button
                 onClick={onClose}
-                className="w-full mt-6 py-4 bg-[#DC2626] text-white font-semibold rounded-xl hover:bg-[#B91C1C] transition-colors"
+                className="w-full mt-6 py-4 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white font-semibold rounded-xl hover:opacity-90 transition-opacity"
               >
                 Show {resultCount} Results
               </button>

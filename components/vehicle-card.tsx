@@ -18,7 +18,7 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
     return (
         <div className={`bg-white rounded-xl border p-6 shadow-sm relative ${vehicle.isPrimary ? "border-red-500 ring-1 ring-red-500" : ""}`}>
             {vehicle.isPrimary && (
-                <span className="absolute top-4 right-4 bg-[#DC2626] text-white text-xs font-bold px-2 py-1 rounded-full">
+                <span className="absolute top-4 right-4 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white text-xs font-bold px-2 py-1 rounded-full">
                     Primary
                 </span>
             )}

@@ -11,7 +11,7 @@ export default function MyVehiclesPage() {
                     <h1 className="text-3xl font-bold flex items-center gap-2">
                         🚗 MY VEHICLES
                     </h1>
-                    <Button className="bg-[#10B981] hover:bg-[#059669] text-white">
+                    <Button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white rounded-lg hover:opacity-90 transition-opacity">
                         <Plus className="w-4 h-4 mr-2" /> Add Vehicle
                     </Button>
                 </div>
@@ -27,7 +27,7 @@ export default function MyVehiclesPage() {
                     {/* Add New Vehicle Card */}
                     <button className="bg-red-50 rounded-xl border-2 border-dashed border-red-300 p-6 flex flex-col items-center justify-center min-h-[400px] hover:bg-red-100 transition-colors group">
                         <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                            <Plus className="w-8 h-8 text-[#DC2626]" />
+                            <Plus className="w-8 h-8 text-[#0D9488]" />
                         </div>
                         <h3 className="text-lg font-bold text-[#1F2937] mb-2">Add New Vehicle</h3>
                         <p className="text-sm text-gray-500">Click to add another vehicle</p>

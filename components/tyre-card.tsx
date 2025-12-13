@@ -4,7 +4,7 @@ import { useState } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Star, Truck, Check, ShoppingCart } from "lucide-react"
+import { Star, Truck, ShoppingCart } from "lucide-react"
 import type { Tyre } from "@/lib/tyre-data"
 
 interface TyreCardProps {
@@ -28,7 +28,7 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
 
   return (
     <div
-      className={`bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] overflow-hidden transition-all ${isSelected ? "ring-2 ring-[#DC2626]" : ""
+      className={`bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] overflow-hidden transition-all ${isSelected ? "ring-2 ring-[#0D9488]" : ""
         } ${!tyre.inStock ? "opacity-75" : ""}`}
     >
       {/* Image Section */}
@@ -42,21 +42,14 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
             {selectedVariant === "new" ? "🆕 New" : "♻️ Used"}
           </span>
           {discount > 0 && (
-            <span className="px-3 py-1 bg-[#DC2626] text-white rounded-full text-xs font-semibold">
+            <span className="px-3 py-1 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white rounded-full text-xs font-semibold">
               {discount}% OFF
             </span>
           )}
         </div>
 
-        {/* Selection Checkbox */}
-        <button
-          onClick={onSelect}
-          disabled={!tyre.inStock}
-          className={`absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all z-10 ${isSelected ? "bg-[#DC2626] border-[#DC2626]" : "border-[#D1D5DB] bg-white hover:border-[#DC2626]"
-            } ${!tyre.inStock ? "cursor-not-allowed opacity-50" : ""}`}
-        >
-          {isSelected && <Check className="w-4 h-4 text-white" />}
-        </button>
+
+
 
         {/* Tyre Image */}
         <div className="relative w-full aspect-square">
@@ -79,7 +72,7 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
       <div className="p-5">
         {/* Brand & Model */}
         <div className="mb-2">
-          <span className="text-xs font-medium text-[#DC2626] uppercase tracking-wide">{tyre.brand}</span>
+          <span className="text-xs font-medium text-[#0D9488] uppercase tracking-wide">{tyre.brand}</span>
           <h3 className="text-lg font-semibold text-[#1F2937]">{tyre.model}</h3>
           <p className="text-sm text-[#6B7280]">{tyre.size}</p>
         </div>
@@ -126,12 +119,12 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
             <button
               onClick={() => handleVariantSelect("new")}
               className={`flex-1 border rounded-lg p-2 text-center transition-all ${selectedVariant === "new"
-                ? "bg-red-50 border-red-200 ring-1 ring-red-200"
-                : "bg-white border-gray-100 hover:border-red-100"
+                ? "bg-[#F0FDFA] border-[#0D9488] ring-1 ring-[#0D9488]"
+                : "bg-white border-gray-100 hover:border-[#0D9488]"
                 }`}
             >
               <div
-                className={`text-[10px] uppercase font-bold tracking-wider mb-0.5 ${selectedVariant === "new" ? "text-red-500" : "text-gray-400"
+                className={`text-[10px] uppercase font-bold tracking-wider mb-0.5 ${selectedVariant === "new" ? "text-[#0D9488]" : "text-gray-400"
                   }`}
               >
                 New
@@ -176,7 +169,7 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
         <Link
           href={isSelected && tyre.inStock ? `/quote?tyreId=${tyre.id}` : "#"}
           className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${isSelected && tyre.inStock
-            ? "bg-[#DC2626] text-white hover:bg-[#B91C1C]"
+            ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white hover:opacity-90"
             : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed pointer-events-none"
             }`}
           aria-disabled={!isSelected || !tyre.inStock}

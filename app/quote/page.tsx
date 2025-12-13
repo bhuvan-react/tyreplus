@@ -78,7 +78,7 @@ function QuoteContent() {
                             {tyre.brand} {tyre.model} {tyre.size}
                         </h2>
                         <div className="flex items-center justify-center sm:justify-start gap-3">
-                            <span className="text-2xl font-bold text-[#DC2626]">
+                            <span className="text-2xl font-bold text-[#0D9488]">
                                 ₹{tyre.price.toLocaleString()}
                             </span>
                             {discount > 0 && (
@@ -101,7 +101,7 @@ function QuoteContent() {
                     <div className="space-y-6">
                         {/* Step 1 */}
                         <div className="flex gap-4">
-                            <div className="w-8 h-8 rounded-full bg-[#DC2626] text-white flex items-center justify-center font-bold flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-[#0D9488] text-white flex items-center justify-center font-bold flex-shrink-0">
                                 1
                             </div>
                             <div>
@@ -116,7 +116,7 @@ function QuoteContent() {
 
                         {/* Step 2 */}
                         <div className="flex gap-4">
-                            <div className="w-8 h-8 rounded-full bg-[#DC2626] text-white flex items-center justify-center font-bold flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-[#0D9488] text-white flex items-center justify-center font-bold flex-shrink-0">
                                 2
                             </div>
                             <div>
@@ -131,7 +131,7 @@ function QuoteContent() {
 
                         {/* Step 3 */}
                         <div className="flex gap-4">
-                            <div className="w-8 h-8 rounded-full bg-[#DC2626] text-white flex items-center justify-center font-bold flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-[#0D9488] text-white flex items-center justify-center font-bold flex-shrink-0">
                                 3
                             </div>
                             <div>
@@ -146,7 +146,7 @@ function QuoteContent() {
 
                         {/* Step 4 */}
                         <div className="flex gap-4">
-                            <div className="w-8 h-8 rounded-full bg-[#DC2626] text-white flex items-center justify-center font-bold flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-[#0D9488] text-white flex items-center justify-center font-bold flex-shrink-0">
                                 4
                             </div>
                             <div>
@@ -159,7 +159,7 @@ function QuoteContent() {
                             </div>
                         </div>
                         <div className="flex gap-4">
-                            <div className="w-8 h-8 rounded-full bg-[#DC2626] text-white flex items-center justify-center font-bold flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-[#0D9488] text-white flex items-center justify-center font-bold flex-shrink-0">
                                 5
                             </div>
                             <div>

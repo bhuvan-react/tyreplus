@@ -39,7 +39,7 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[#DC2626] rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-gradient-to-br from-[#14B8A6] to-[#0D9488] rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">T+</span>
             </div>
             <span className="text-xl font-bold text-[#1F2937]">TyrePlus</span>
@@ -47,16 +47,16 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium">
+            <Link href="/" className="text-[#6B7280] hover:text-[#0D9488] transition-colors font-medium">
               Home
             </Link>
-            <Link href="/search" className="text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium">
+            {/* <Link href="/search" className="text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium">
               Browse Tyres
-            </Link>
-            <Link href="#" className="text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium">
+            </Link> */}
+            <Link href="#" className="text-[#6B7280] hover:text-[#0D9488] transition-colors font-medium">
               Services
             </Link>
-            <Link href="#" className="text-[#6B7280] hover:text-[#DC2626] transition-colors font-medium">
+            <Link href="#" className="text-[#6B7280] hover:text-[#0D9488] transition-colors font-medium">
               About
             </Link>
           </nav>
@@ -72,7 +72,7 @@ export function Header() {
                   className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-[#F9FAFB] transition-colors"
                 >
                   <div className="w-8 h-8 bg-[#FEE2E2] rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-[#DC2626]" />
+                    <User className="w-4 h-4 text-[#0D9488]" />
                   </div>
                   <span className="text-[#1F2937] font-medium">{user.name.split(" ")[0]}</span>
                   <ChevronDown
@@ -108,7 +108,7 @@ export function Header() {
                         </button>
                         <button
                           onClick={handleLogout}
-                          className="w-full px-4 py-2 text-left text-sm text-[#DC2626] hover:bg-[#FEF2F2] flex items-center gap-3"
+                          className="w-full px-4 py-2 text-left text-sm text-[#0D9488] hover:bg-[#F0FDFA] flex items-center gap-3"
                         >
                           <LogOut className="w-4 h-4" />
                           Logout
@@ -122,13 +122,13 @@ export function Header() {
               <>
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-[#DC2626] font-medium hover:bg-[#FEF2F2] rounded-lg transition-colors"
+                  className="px-4 py-2 text-[#0D9488] font-medium hover:bg-[#F0FDFA] rounded-lg transition-colors"
                 >
                   Login
                 </Link>
                 <Link
                   href="/register"
-                  className="px-4 py-2 bg-[#DC2626] text-white font-medium rounded-lg hover:bg-[#B91C1C] transition-colors"
+                  className="px-4 py-2 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white font-medium rounded-lg hover:opacity-90 transition-opacity"
                 >
                   Register
                 </Link>
@@ -159,9 +159,9 @@ export function Header() {
               <Link href="/" className="block px-4 py-2 text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg">
                 Home
               </Link>
-              <Link href="/search" className="block px-4 py-2 text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg">
+              {/* <Link href="/search" className="block px-4 py-2 text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg">
                 Browse Tyres
-              </Link>
+              </Link> */}
               <Link href="#" className="block px-4 py-2 text-[#1F2937] hover:bg-[#F9FAFB] rounded-lg">
                 Services
               </Link>
@@ -182,17 +182,17 @@ export function Header() {
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="w-full px-4 py-2 text-left text-[#DC2626] hover:bg-[#FEF2F2] rounded-lg"
+                      className="w-full px-4 py-2 text-left text-[#0D9488] hover:bg-[#F0FDFA] rounded-lg"
                     >
                       Logout
                     </button>
                   </>
                 ) : (
                   <>
-                    <Link href="/login" className="block px-4 py-2 text-[#DC2626] hover:bg-[#FEF2F2] rounded-lg">
+                    <Link href="/login" className="block px-4 py-2 text-[#0D9488] hover:bg-[#F0FDFA] rounded-lg">
                       Login
                     </Link>
-                    <Link href="/register" className="block px-4 py-2 bg-[#DC2626] text-white rounded-lg text-center">
+                    <Link href="/register" className="block px-4 py-2 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white rounded-lg text-center">
                       Register
                     </Link>
                   </>

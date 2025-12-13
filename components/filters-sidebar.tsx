@@ -64,11 +64,10 @@ export function FiltersSidebar({
             <button
               key={type}
               onClick={() => setTyreType(type)}
-              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-                tyreType === type
-                  ? "bg-[#DC2626] text-white"
-                  : "bg-[#F9FAFB] text-[#6B7280] hover:bg-[#FEF2F2] hover:text-[#DC2626]"
-              }`}
+              className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${tyreType === type
+                  ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white"
+                  : "bg-[#F9FAFB] text-[#6B7280] hover:bg-[#F0FDFA] hover:text-[#0D9488]"
+                }`}
             >
               {type === "all" ? "All" : type === "new" ? "🆕 New" : "♻️ Used"}
             </button>
@@ -83,11 +82,10 @@ export function FiltersSidebar({
           {brands.map((brand) => (
             <label key={brand} className="flex items-center gap-3 cursor-pointer group">
               <div
-                className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                  selectedBrands.includes(brand)
-                    ? "bg-[#DC2626] border-[#DC2626]"
-                    : "border-[#D1D5DB] group-hover:border-[#DC2626]"
-                }`}
+                className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${selectedBrands.includes(brand)
+                    ? "bg-[#0D9488] border-[#0D9488]"
+                    : "border-[#D1D5DB] group-hover:border-[#0D9488]"
+                  }`}
               >
                 {selectedBrands.includes(brand) && (
                   <motion.svg
@@ -121,17 +119,16 @@ export function FiltersSidebar({
           {priceRanges.map((range) => (
             <label key={range.label} className="flex items-center gap-3 cursor-pointer group">
               <div
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
-                  selectedPriceRange?.min === range.min && selectedPriceRange?.max === range.max
-                    ? "border-[#DC2626]"
-                    : "border-[#D1D5DB] group-hover:border-[#DC2626]"
-                }`}
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedPriceRange?.min === range.min && selectedPriceRange?.max === range.max
+                    ? "border-[#0D9488]"
+                    : "border-[#D1D5DB] group-hover:border-[#0D9488]"
+                  }`}
               >
                 {selectedPriceRange?.min === range.min && selectedPriceRange?.max === range.max && (
                   <motion.div
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="w-3 h-3 bg-[#DC2626] rounded-full"
+                    className="w-3 h-3 bg-[#0D9488] rounded-full"
                   />
                 )}
               </div>
@@ -156,9 +153,8 @@ export function FiltersSidebar({
             <button
               key={rating}
               onClick={() => setMinRating(rating)}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm transition-all ${
-                minRating === rating ? "bg-[#DC2626] text-white" : "bg-[#F9FAFB] text-[#6B7280] hover:bg-[#FEF2F2]"
-              }`}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-sm transition-all ${minRating === rating ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white" : "bg-[#F9FAFB] text-[#6B7280] hover:bg-[#F0FDFA]"
+                }`}
             >
               {rating === 0 ? (
                 "All"
@@ -176,7 +172,7 @@ export function FiltersSidebar({
       {/* Clear All */}
       <button
         onClick={handleClearAll}
-        className="w-full py-2 text-[#DC2626] font-medium hover:bg-[#FEF2F2] rounded-lg transition-colors"
+        className="w-full py-2 text-[#0D9488] font-medium hover:bg-[#F0FDFA] rounded-lg transition-colors"
       >
         Clear All Filters
       </button>

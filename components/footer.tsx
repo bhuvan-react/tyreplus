@@ -9,7 +9,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-[#DC2626] rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#14B8A6] to-[#0D9488] rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-lg">T+</span>
               </div>
               <span className="text-xl font-bold">TyrePlus</span>
@@ -21,25 +21,25 @@ export function Footer() {
             <div className="flex gap-4">
               <a
                 href="#"
-                className="w-8 h-8 bg-[#374151] rounded-full flex items-center justify-center hover:bg-[#DC2626] transition-colors"
+                className="w-8 h-8 bg-[#374151] rounded-full flex items-center justify-center hover:bg-[#0D9488] transition-colors"
               >
                 <Facebook className="w-4 h-4" />
               </a>
               <a
                 href="#"
-                className="w-8 h-8 bg-[#374151] rounded-full flex items-center justify-center hover:bg-[#DC2626] transition-colors"
+                className="w-8 h-8 bg-[#374151] rounded-full flex items-center justify-center hover:bg-[#0D9488] transition-colors"
               >
                 <Twitter className="w-4 h-4" />
               </a>
               <a
                 href="#"
-                className="w-8 h-8 bg-[#374151] rounded-full flex items-center justify-center hover:bg-[#DC2626] transition-colors"
+                className="w-8 h-8 bg-[#374151] rounded-full flex items-center justify-center hover:bg-[#0D9488] transition-colors"
               >
                 <Instagram className="w-4 h-4" />
               </a>
               <a
                 href="#"
-                className="w-8 h-8 bg-[#374151] rounded-full flex items-center justify-center hover:bg-[#DC2626] transition-colors"
+                className="w-8 h-8 bg-[#374151] rounded-full flex items-center justify-center hover:bg-[#0D9488] transition-colors"
               >
                 <Youtube className="w-4 h-4" />
               </a>
@@ -55,11 +55,11 @@ export function Footer() {
                   Home
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link href="/search" className="text-[#9CA3AF] hover:text-white transition-colors">
                   Browse Tyres
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link href="#" className="text-[#9CA3AF] hover:text-white transition-colors">
                   Our Services
@@ -115,15 +115,15 @@ export function Footer() {
             <h3 className="text-lg font-semibold mb-4">Contact Us</h3>
             <ul className="space-y-3">
               <li className="flex items-center gap-3 text-[#9CA3AF]">
-                <Phone className="w-4 h-4 text-[#DC2626]" />
+                <Phone className="w-4 h-4 text-[#0D9488]" />
                 <span>1800-123-4567</span>
               </li>
               <li className="flex items-center gap-3 text-[#9CA3AF]">
-                <Mail className="w-4 h-4 text-[#DC2626]" />
+                <Mail className="w-4 h-4 text-[#0D9488]" />
                 <span>support@tyreplus.in</span>
               </li>
               <li className="flex items-start gap-3 text-[#9CA3AF]">
-                <MapPin className="w-4 h-4 text-[#DC2626] mt-0.5" />
+                <MapPin className="w-4 h-4 text-[#0D9488] mt-0.5" />
                 <span>2nd floor, No. 212/A, 1st Main Rd, Stage 2, Domlur, Bengaluru, Karnataka 560071</span>
               </li>
             </ul>

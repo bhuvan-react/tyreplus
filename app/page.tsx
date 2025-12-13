@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 import { VehicleSelector } from "@/components/vehicle-selector"
 import { OtpModal } from "@/components/otp-modal"
+import { PopularSearches } from "@/components/popular-searches"
 import { useAppSelector } from "@/lib/hooks"
 import { Shield, Truck, Wrench, Star, CheckCircle } from "lucide-react"
 
@@ -45,19 +46,19 @@ export default function HomePage() {
       <section className="relative bg-gradient-to-br from-[#FEF2F2] via-white to-[#FEE2E2] py-12 md:py-20 overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-[#DC2626] rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#DC2626] rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+          <div className="absolute top-0 left-0 w-96 h-96 bg-[#0D9488] rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#14B8A6] rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-              <span className="inline-block px-4 py-2 bg-[#FEE2E2] text-[#DC2626] rounded-full text-sm font-semibold mb-6">
+              <span className="inline-block px-4 py-2 bg-[#F0FDFA] text-[#0D9488] rounded-full text-lg font-semibold mb-6">
                 🚗 India's #1 Tyre Marketplace
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1F2937] leading-tight mb-6">
-                Premium Tyres for <span className="text-[#DC2626]">Every Vehicle</span>
+                Premium Tyres for <span className="text-[#0D9488]">Every Vehicle</span>
               </h1>
               <p className="text-lg text-[#6B7280] mb-8 max-w-lg">
                 Discover the perfect tyres for your 2-wheeler, 3-wheeler, or 4-wheeler. Quality assured with free
@@ -90,7 +91,7 @@ export default function HomePage() {
                     transition={{ delay: 0.2 + index * 0.1 }}
                     className="text-center md:text-left"
                   >
-                    <div className="text-2xl md:text-3xl font-bold text-[#DC2626]">{stat.value}</div>
+                    <div className="text-2xl md:text-3xl font-bold text-[#0D9488]">{stat.value}</div>
                     <div className="text-sm text-[#6B7280]">{stat.label}</div>
                   </motion.div>
                 ))}
@@ -108,6 +109,9 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Popular Searches */}
+      <PopularSearches />
 
       {/* Features Section */}
       <section className="py-16 bg-white">
@@ -133,9 +137,9 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="group p-6 bg-[#F9FAFB] rounded-2xl hover:bg-[#FEF2F2] transition-all duration-300 hover:shadow-lg"
+                className="group p-6 bg-[#F9FAFB] rounded-2xl hover:bg-[#F0FDFA] transition-all duration-300 hover:shadow-lg"
               >
-                <div className="w-14 h-14 bg-[#FEE2E2] rounded-xl flex items-center justify-center text-[#DC2626] mb-4 group-hover:bg-[#DC2626] group-hover:text-white transition-colors">
+                <div className="w-14 h-14 bg-[#E0F2F2] rounded-xl flex items-center justify-center text-[#0D9488] mb-4 group-hover:bg-[#0D9488] group-hover:text-white transition-colors">
                   {feature.icon}
                 </div>
                 <h3 className="text-lg font-semibold text-[#1F2937] mb-2">{feature.title}</h3>
@@ -156,7 +160,7 @@ export default function HomePage() {
             </p>
             <button
               onClick={() => document.querySelector("main")?.scrollTo({ top: 0, behavior: "smooth" })}
-              className="px-8 py-4 bg-[#DC2626] text-white font-semibold rounded-xl hover:bg-[#B91C1C] transition-colors inline-flex items-center gap-2"
+              className="px-8 py-4 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white font-semibold rounded-xl hover:opacity-90 transition-opacity inline-flex items-center gap-2"
             >
               🔍 Search Tyres Now
             </button>
