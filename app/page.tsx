@@ -43,9 +43,9 @@ export default function HomePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-[#FEF2F2] via-white to-[#FEE2E2] py-12 md:py-20 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-[#F0FDFA] via-white to-[#CCFBF1] py-12 md:py-20">
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 opacity-5 overflow-hidden">
           <div className="absolute top-0 left-0 w-96 h-96 bg-[#0D9488] rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#14B8A6] rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
         </div>
@@ -58,7 +58,7 @@ export default function HomePage() {
                 🚗 India's #1 Tyre Marketplace
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1F2937] leading-tight mb-6">
-                Premium Tyres for <span className="text-[#0D9488]">Every Vehicle</span>
+                Perfect Tyres for <span className="text-[#0D9488]">Every Vehicle</span>
               </h1>
               <p className="text-lg text-[#6B7280] mb-8 max-w-lg">
                 Discover the perfect tyres for your 2-wheeler, 3-wheeler, or 4-wheeler. Quality assured with free

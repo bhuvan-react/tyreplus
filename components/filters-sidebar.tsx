@@ -65,7 +65,11 @@ export function FiltersSidebar({
               key={type}
               onClick={() => setTyreType(type)}
               className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${tyreType === type
-                  ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white"
+                ? type === "used"
+                  ? "bg-[#9333EA] text-white"
+                  : "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white"
+                : type === "used"
+                  ? "bg-[#F9FAFB] text-[#6B7280] hover:bg-[#FAF5FF] hover:text-[#9333EA]"
                   : "bg-[#F9FAFB] text-[#6B7280] hover:bg-[#F0FDFA] hover:text-[#0D9488]"
                 }`}
             >
@@ -83,8 +87,8 @@ export function FiltersSidebar({
             <label key={brand} className="flex items-center gap-3 cursor-pointer group">
               <div
                 className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${selectedBrands.includes(brand)
-                    ? "bg-[#0D9488] border-[#0D9488]"
-                    : "border-[#D1D5DB] group-hover:border-[#0D9488]"
+                  ? "bg-[#0D9488] border-[#0D9488]"
+                  : "border-[#D1D5DB] group-hover:border-[#0D9488]"
                   }`}
               >
                 {selectedBrands.includes(brand) && (
@@ -120,8 +124,8 @@ export function FiltersSidebar({
             <label key={range.label} className="flex items-center gap-3 cursor-pointer group">
               <div
                 className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${selectedPriceRange?.min === range.min && selectedPriceRange?.max === range.max
-                    ? "border-[#0D9488]"
-                    : "border-[#D1D5DB] group-hover:border-[#0D9488]"
+                  ? "border-[#0D9488]"
+                  : "border-[#D1D5DB] group-hover:border-[#0D9488]"
                   }`}
               >
                 {selectedPriceRange?.min === range.min && selectedPriceRange?.max === range.max && (

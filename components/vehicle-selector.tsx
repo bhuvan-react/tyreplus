@@ -7,7 +7,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useAppSelector, useAppDispatch } from "@/lib/hooks"
 import { setVehicleType, setMake, setModel, setVariant, setPincode } from "@/lib/store"
 import { getMakes, getModels, getVariants, type VehicleType } from "@/lib/vehicle-data"
-import { ChevronDown, Bike, Car, Check } from "lucide-react"
+import { ChevronDown, Check } from "lucide-react"
+import Image from "next/image"
 
 interface VehicleSelectorProps {
   onSearch: () => void
@@ -19,9 +20,9 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
 
   const vehicleTypes: { type: VehicleType; label: string; icon: React.ReactNode }[] = [
-    { type: "2W", label: "2 Wheeler", icon: <Bike className="w-5 h-5" /> },
-    { type: "3W", label: "3 Wheeler", icon: <span className="text-lg">🛺</span> },
-    { type: "4W", label: "4 Wheeler", icon: <Car className="w-5 h-5" /> },
+    { type: "2W", label: "2 Wheeler", icon: <Image src="/pulsar-icon.png" alt="2 Wheeler" width={32} height={32} className="w-8 h-8 object-contain" /> },
+    { type: "3W", label: "3 Wheeler", icon: <Image src="/auto-icon.png" alt="3 Wheeler" width={32} height={32} className="w-8 h-8 object-contain" /> },
+    { type: "4W", label: "4 Wheeler", icon: <Image src="/mustang-icon.png" alt="4 Wheeler" width={32} height={32} className="w-8 h-8 object-contain" /> },
   ]
 
   const makes = search.vehicleType ? getMakes(search.vehicleType) : []

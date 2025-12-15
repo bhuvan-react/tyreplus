@@ -32,11 +32,11 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
         } ${!tyre.inStock ? "opacity-75" : ""}`}
     >
       {/* Image Section */}
-      <div className="relative bg-[#F9FAFB] p-6">
+      <div className="relative bg-[#F9FAFB] p-4">
         {/* Badges */}
         <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
           <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${selectedVariant === "new" ? "bg-[#10B981] text-white" : "bg-[#6B7280] text-white"
+            className={`px-3 py-1 rounded-full text-xs font-semibold ${selectedVariant === "new" ? "bg-[#10B981] text-white" : "bg-[#9333EA] text-white"
               }`}
           >
             {selectedVariant === "new" ? "🆕 New" : "♻️ Used"}
@@ -69,7 +69,7 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
       </div>
 
       {/* Content Section */}
-      <div className="p-5">
+      <div className="p-4">
         {/* Brand & Model */}
         <div className="mb-2">
           <span className="text-xs font-medium text-[#0D9488] uppercase tracking-wide">{tyre.brand}</span>
@@ -78,7 +78,7 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
         </div>
 
         {/* Rating */}
-        <div className="flex items-center gap-2 mb-3">
+        <div className="flex items-center gap-2 mb-2">
           <div className="flex items-center gap-1">
             {[...Array(5)].map((_, i) => (
               <Star
@@ -94,7 +94,7 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
 
         {/* Used Tyre Details */}
         {selectedVariant === "used" && (
-          <div className="flex gap-4 mb-3 text-sm">
+          <div className="flex gap-4 mb-2 text-sm">
             <span className="text-[#6B7280]">
               Condition: <span className="font-medium text-[#1F2937]">{tyre.condition || "Good"}</span>
             </span>
@@ -105,7 +105,7 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
         )}
 
         {/* Features */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-3">
           {tyre.features.slice(0, 3).map((feature) => (
             <span key={feature} className="px-2 py-1 bg-[#F9FAFB] text-[#6B7280] text-xs rounded-md">
               {feature}
@@ -114,7 +114,7 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
         </div>
 
         {/* Price Chips */}
-        <div className="flex items-center gap-3 mb-4">
+        <div className="flex items-center gap-3 mb-3">
           {tyre.type !== "used" && (
             <button
               onClick={() => handleVariantSelect("new")}
@@ -141,12 +141,12 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
             className={`flex-1 border rounded-lg p-2 text-center transition-all ${!tyre.usedPrice
               ? "bg-gray-50 border-gray-100 opacity-50 cursor-not-allowed"
               : selectedVariant === "used"
-                ? "bg-gray-100 border-gray-300 ring-1 ring-gray-300"
-                : "bg-white border-gray-100 hover:border-gray-200"
+                ? "bg-[#FAF5FF] border-[#9333EA] ring-1 ring-[#9333EA]"
+                : "bg-white border-gray-100 hover:border-[#9333EA]"
               }`}
           >
             <div
-              className={`text-[10px] uppercase font-bold tracking-wider mb-0.5 ${selectedVariant === "used" ? "text-gray-700" : "text-gray-400"
+              className={`text-[10px] uppercase font-bold tracking-wider mb-0.5 ${selectedVariant === "used" ? "text-[#9333EA]" : "text-gray-400"
                 }`}
             >
               Used
@@ -159,7 +159,7 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
 
         {/* Free Installation Badge */}
         {tyre.freeInstallation && (
-          <div className="flex items-center gap-2 mb-4 text-[#10B981]">
+          <div className="flex items-center gap-2 mb-3 text-[#10B981]">
             <Truck className="w-4 h-4" />
             <span className="text-sm font-medium">Free Installation</span>
           </div>
@@ -168,7 +168,7 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
         {/* Show Interest Button */}
         <Link
           href={isSelected && tyre.inStock ? `/quote?tyreId=${tyre.id}` : "#"}
-          className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${isSelected && tyre.inStock
+          className={`w-full py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${isSelected && tyre.inStock
             ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white hover:opacity-90"
             : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed pointer-events-none"
             }`}

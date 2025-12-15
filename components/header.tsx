@@ -46,14 +46,14 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          {/* <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex items-center gap-8">
             <Link href="/" className="text-[#6B7280] hover:text-[#0D9488] transition-colors font-medium">
               Home
             </Link>
             <Link href="#" className="text-[#6B7280] hover:text-[#0D9488] transition-colors font-medium">
               About
             </Link>
-          </nav> */}
+          </nav>
 
           {/* Auth Section */}
           <div className="hidden md:flex items-center gap-4">
