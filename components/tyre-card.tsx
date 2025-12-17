@@ -1,11 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { Star, Truck, ShoppingCart } from "lucide-react"
+import { Star, Truck, ShoppingCart, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react"
 import type { Tyre } from "@/lib/tyre-data"
+import useEmblaCarousel from "embla-carousel-react"
+import { ImageViewer } from "./image-viewer"
 
 interface TyreCardProps {
   tyre: Tyre
@@ -15,8 +17,40 @@ interface TyreCardProps {
 
 export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
   const [selectedVariant, setSelectedVariant] = useState<"new" | "used">(tyre.type === "used" ? "used" : "new")
+  const [isViewerOpen, setIsViewerOpen] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true })
+
+  // Mock 4 images for the carousel (using the same image for demo purposes)
+  // In a real app, these would be different views from the API
+  const images = [
+    tyre.image || "/placeholder.svg",
+    tyre.image || "/placeholder.svg",
+    tyre.image || "/placeholder.svg",
+    tyre.image || "/placeholder.svg",
+  ]
 
   const discount = tyre.originalPrice ? Math.round(((tyre.originalPrice - tyre.price) / tyre.originalPrice) * 100) : 0
+
+  useEffect(() => {
+    if (!emblaApi) return
+
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap())
+    }
+
+    emblaApi.on("select", onSelect)
+    onSelect()
+
+    return () => {
+      emblaApi.off("select", onSelect)
+    }
+  }, [emblaApi])
+
+  const scrollTo = (index: number) => {
+    emblaApi && emblaApi.scrollTo(index)
+  }
 
   const handleVariantSelect = (variant: "new" | "used") => {
     if (variant === "used" && !tyre.usedPrice) return
@@ -24,6 +58,22 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
     if (!isSelected) {
       onSelect()
     }
+  }
+
+  const scrollPrev = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    emblaApi?.scrollPrev()
+  }
+
+  const scrollNext = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    emblaApi?.scrollNext()
+  }
+
+  const openViewer = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setIsViewerOpen(true)
+    setCurrentImageIndex(selectedIndex)
   }
 
   return (
@@ -51,14 +101,63 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
 
 
 
-        {/* Tyre Image */}
-        <div className="relative w-full aspect-square">
-          <Image
-            src={tyre.image || "/placeholder.svg"}
-            alt={`${tyre.brand} ${tyre.model}`}
-            fill
-            className="object-contain"
-          />
+        {/* Carousel */}
+        <div className="relative group/carousel">
+          <div className="overflow-hidden rounded-xl" ref={emblaRef}>
+            <div className="flex">
+              {images.map((img, index) => (
+                <div key={index} className="relative w-full aspect-square flex-[0_0_100%] min-w-0">
+                  <Image
+                    src={img}
+                    alt={`${tyre.brand} ${tyre.model} view ${index + 1}`}
+                    fill
+                    className="object-contain cursor-pointer hover:scale-105 transition-transform duration-300"
+                    onClick={openViewer}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Carousel Controls */}
+          <button
+            onClick={scrollPrev}
+            className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/80 hover:bg-white rounded-full shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10"
+          >
+            <ChevronLeft className="w-4 h-4 text-gray-700" />
+          </button>
+          <button
+            onClick={scrollNext}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/80 hover:bg-white rounded-full shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10"
+          >
+            <ChevronRight className="w-4 h-4 text-gray-700" />
+          </button>
+
+          {/* Maximize Button */}
+          <button
+            onClick={openViewer}
+            className="absolute top-2 right-2 p-1.5 bg-white/80 hover:bg-white rounded-full shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10"
+          >
+            <Maximize2 className="w-4 h-4 text-gray-700" />
+          </button>
+
+          {/* Dots */}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  scrollTo(index)
+                }}
+                className={`w-2 h-2 rounded-full transition-all ${selectedIndex === index
+                  ? "bg-[#0D9488] w-4"
+                  : "bg-gray-300 hover:bg-gray-400"
+                  }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
 
         {!tyre.inStock && (
@@ -169,18 +268,24 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
         <Link
           href={isSelected && tyre.inStock ? `/quote?tyreId=${tyre.id}` : "#"}
           className={`w-full py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${isSelected && tyre.inStock
-            ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white hover:opacity-90"
+            ? selectedVariant === "new"
+              ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white hover:opacity-90"
+              : "bg-[#9333EA] text-white hover:opacity-90"
             : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed pointer-events-none"
             }`}
           aria-disabled={!isSelected || !tyre.inStock}
         >
           <ShoppingCart className="w-5 h-5" />
-          Show Interest
+          Buy now
         </Link>
-        {!isSelected && tyre.inStock && (
-          <p className="text-xs text-[#9CA3AF] text-center mt-2">Select this tyre to show interest</p>
-        )}
       </div>
-    </div>
+
+      <ImageViewer
+        isOpen={isViewerOpen}
+        onClose={() => setIsViewerOpen(false)}
+        images={images}
+        initialIndex={currentImageIndex}
+      />
+    </div >
   )
 }
