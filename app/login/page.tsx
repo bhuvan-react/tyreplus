@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useAppDispatch } from "@/lib/hooks"
 import { setUser } from "@/lib/store"
 import { Eye, EyeOff, Phone, Lock, Shield, Truck, Star, Award, ArrowRight, Check } from "lucide-react"
+import { useGoogleLogin } from "@react-oauth/google"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -61,18 +62,38 @@ export default function LoginPage() {
     router.push("/")
   }
 
-  const handleGoogleLogin = async () => {
-    setIsLoading(true)
-    await new Promise((r) => setTimeout(r, 1500))
-    const user = {
-      id: `user_${Date.now()}`,
-      name: "Google User",
-      mobile: "9999999999",
-    }
-    localStorage.setItem("tyreplus_user", JSON.stringify(user))
-    dispatch(setUser(user))
-    router.push("/")
-  }
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setIsLoading(true)
+      try {
+        const userInfoResponse = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        })
+        const userInfo = await userInfoResponse.json()
+
+        // Google doesn't provide mobile number, and it's mandatory.
+        // So we redirect to Register page to collect and verify mobile number.
+        const tempUser = {
+          name: userInfo.name,
+          email: userInfo.email,
+          image: userInfo.picture,
+          googleId: userInfo.sub
+        }
+
+        localStorage.setItem("temp_google_user", JSON.stringify(tempUser))
+        router.push("/register")
+      } catch (error) {
+        console.error("Google login failed", error)
+        setError("Failed to login with Google")
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    onError: () => {
+      setError("Google login failed. Please ensure you have added a valid Client ID.")
+      setIsLoading(false)
+    },
+  })
 
   const handleForgotPhoneSubmit = async () => {
     if (forgotPhone.length !== 10) return
@@ -170,7 +191,7 @@ export default function LoginPage() {
                 {/* Google Sign In */}
                 <button
                   type="button"
-                  onClick={handleGoogleLogin}
+                  onClick={() => handleGoogleLogin()}
                   className="w-full py-3 bg-white border border-[#D1D5DB] text-[#1F2937] rounded-xl font-semibold hover:bg-[#F9FAFB] transition-colors flex items-center justify-center gap-2 mb-6"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">

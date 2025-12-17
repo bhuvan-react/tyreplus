@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useAppDispatch } from "@/lib/hooks"
 import { setUser } from "@/lib/store"
 import { Eye, EyeOff, User, Phone, Lock, MapPin, ArrowRight, Check, AlertCircle } from "lucide-react"
+import { useGoogleLogin } from "@react-oauth/google"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -38,6 +39,22 @@ export default function RegisterPage() {
       return () => clearInterval(interval)
     }
   }, [step, timer])
+
+  // Check for temp Google user from Login page
+  useEffect(() => {
+    const tempUserStr = localStorage.getItem("temp_google_user")
+    if (tempUserStr) {
+      try {
+        const tempUser = JSON.parse(tempUserStr)
+        setName(tempUser.name)
+        setIsGoogleAuth(true)
+        // Clear it so it doesn't persist if they leave
+        localStorage.removeItem("temp_google_user")
+      } catch (e) {
+        console.error("Failed to parse temp google user", e)
+      }
+    }
+  }, [])
 
   // Password strength calculation
   const getPasswordStrength = (pwd: string) => {
@@ -143,13 +160,27 @@ export default function RegisterPage() {
     otpRefs.current[0]?.focus()
   }
 
-  const handleGoogleSignup = async () => {
-    setIsLoading(true)
-    await new Promise((r) => setTimeout(r, 1000))
-    setIsLoading(false)
-    setIsGoogleAuth(true)
-    setName("Google User") // Mock name from Google
-  }
+  const handleGoogleSignup = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setIsLoading(true)
+      try {
+        const userInfoResponse = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        })
+        const userInfo = await userInfoResponse.json()
+
+        setName(userInfo.name)
+        setIsGoogleAuth(true)
+      } catch (error) {
+        console.error("Google signup failed", error)
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    onError: () => {
+      setIsLoading(false)
+    },
+  })
 
   return (
     <div className="min-h-screen bg-[#F9FAFB] flex items-center justify-center p-6">
@@ -216,7 +247,7 @@ export default function RegisterPage() {
                 {!isGoogleAuth && (
                   <button
                     type="button"
-                    onClick={handleGoogleSignup}
+                    onClick={() => handleGoogleSignup()}
                     className="w-full py-3 bg-white border border-[#D1D5DB] text-[#1F2937] rounded-xl font-semibold hover:bg-[#F9FAFB] transition-colors flex items-center justify-center gap-2 mb-4"
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
