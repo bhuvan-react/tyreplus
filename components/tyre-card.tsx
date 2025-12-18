@@ -16,7 +16,10 @@ interface TyreCardProps {
 }
 
 export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
-  const [selectedVariant, setSelectedVariant] = useState<"new" | "used">(tyre.type === "used" ? "used" : "new")
+  // Default to "used" if available, otherwise "new"
+  const [selectedVariant, setSelectedVariant] = useState<"new" | "used">(
+    tyre.usedPrice ? "used" : "new"
+  )
   const [isViewerOpen, setIsViewerOpen] = useState(false)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -60,6 +63,17 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
     }
   }
 
+  const handleCardSelect = () => {
+    if (!isSelected) {
+      // If selecting the card for the first time (or re-selecting),
+      // prioritize "used" if available
+      if (tyre.usedPrice) {
+        setSelectedVariant("used")
+      }
+      onSelect()
+    }
+  }
+
   const scrollPrev = (e: React.MouseEvent) => {
     e.stopPropagation()
     emblaApi?.scrollPrev()
@@ -78,28 +92,32 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
 
   return (
     <div
-      className={`bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] overflow-hidden transition-all ${isSelected ? "ring-2 ring-[#0D9488]" : ""
+      className={`bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] overflow-hidden transition-all flex flex-col sm:flex-row ${isSelected
+        ? selectedVariant === "new"
+          ? "ring-2 ring-[#0D9488]"
+          : "ring-2 ring-[#9333EA]"
+        : ""
         } ${!tyre.inStock ? "opacity-75" : ""}`}
     >
-      {/* Image Section */}
-      <div className="relative bg-[#F9FAFB] p-4">
+      {/* Image Section - Left Side */}
+      <div
+        className="relative bg-[#F9FAFB] p-4 w-full sm:w-48 md:w-56 shrink-0 flex flex-col justify-center"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Badges */}
-        <div className="absolute top-4 left-4 flex flex-col gap-2 z-10">
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
           <span
-            className={`px-3 py-1 rounded-full text-xs font-semibold ${selectedVariant === "new" ? "bg-[#10B981] text-white" : "bg-[#9333EA] text-white"
+            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${selectedVariant === "new" ? "bg-[#10B981] text-white" : "bg-[#9333EA] text-white"
               }`}
           >
             {selectedVariant === "new" ? "🆕 New" : "♻️ Used"}
           </span>
           {discount > 0 && (
-            <span className="px-3 py-1 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white rounded-full text-xs font-semibold">
+            <span className="px-2 py-0.5 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white rounded-full text-[10px] font-semibold">
               {discount}% OFF
             </span>
           )}
         </div>
-
-
-
 
         {/* Carousel */}
         <div className="relative group/carousel">
@@ -122,27 +140,27 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
           {/* Carousel Controls */}
           <button
             onClick={scrollPrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/80 hover:bg-white rounded-full shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10"
+            className="absolute left-0 top-1/2 -translate-y-1/2 p-1 bg-white/80 hover:bg-white rounded-full shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10"
           >
-            <ChevronLeft className="w-4 h-4 text-gray-700" />
+            <ChevronLeft className="w-3 h-3 text-gray-700" />
           </button>
           <button
             onClick={scrollNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-white/80 hover:bg-white rounded-full shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10"
+            className="absolute right-0 top-1/2 -translate-y-1/2 p-1 bg-white/80 hover:bg-white rounded-full shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10"
           >
-            <ChevronRight className="w-4 h-4 text-gray-700" />
+            <ChevronRight className="w-3 h-3 text-gray-700" />
           </button>
 
           {/* Maximize Button */}
           <button
             onClick={openViewer}
-            className="absolute top-2 right-2 p-1.5 bg-white/80 hover:bg-white rounded-full shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10"
+            className="absolute top-0 right-0 p-1 bg-white/80 hover:bg-white rounded-full shadow-sm opacity-0 group-hover/carousel:opacity-100 transition-opacity z-10"
           >
-            <Maximize2 className="w-4 h-4 text-gray-700" />
+            <Maximize2 className="w-3 h-3 text-gray-700" />
           </button>
 
           {/* Dots */}
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+          <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-1 z-10">
             {images.map((_, index) => (
               <button
                 key={index}
@@ -150,8 +168,8 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
                   e.stopPropagation()
                   scrollTo(index)
                 }}
-                className={`w-2 h-2 rounded-full transition-all ${selectedIndex === index
-                  ? "bg-[#0D9488] w-4"
+                className={`w-1.5 h-1.5 rounded-full transition-all ${selectedIndex === index
+                  ? "bg-[#0D9488] w-3"
                   : "bg-gray-300 hover:bg-gray-400"
                   }`}
                 aria-label={`Go to slide ${index + 1}`}
@@ -162,122 +180,89 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
 
         {!tyre.inStock && (
           <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-            <span className="px-4 py-2 bg-[#1F2937] text-white rounded-lg font-semibold">Out of Stock</span>
+            <span className="px-3 py-1 bg-[#1F2937] text-white rounded text-xs font-semibold">Out of Stock</span>
           </div>
         )}
       </div>
 
-      {/* Content Section */}
-      <div className="p-4">
-        {/* Brand & Model */}
-        <div className="mb-2">
-          <span className="text-xs font-medium text-[#0D9488] uppercase tracking-wide">{tyre.brand}</span>
-          <h3 className="text-lg font-semibold text-[#1F2937]">{tyre.model}</h3>
-          <p className="text-sm text-[#6B7280]">{tyre.size}</p>
-        </div>
-
-        {/* Rating */}
-        <div className="flex items-center gap-2 mb-2">
-          <div className="flex items-center gap-1">
-            {[...Array(5)].map((_, i) => (
-              <Star
-                key={i}
-                className={`w-4 h-4 ${i < Math.floor(tyre.rating) ? "text-yellow-400 fill-yellow-400" : "text-[#E5E7EB]"}`}
-              />
-            ))}
+      {/* Content Section - Right Side */}
+      <div
+        className="p-4 flex-1 flex flex-col cursor-pointer"
+        onClick={handleCardSelect}
+      >
+        <div className="flex justify-between items-start mb-2">
+          <div>
+            <span className="text-xs font-medium text-[#0D9488] uppercase tracking-wide">{tyre.brand}</span>
+            <h3 className="text-lg font-bold text-[#1F2937] leading-tight">{tyre.model}</h3>
+            <p className="text-sm text-[#6B7280] mt-0.5">{tyre.size}</p>
           </div>
-          <span className="text-sm text-[#6B7280]">
-            {tyre.rating} ({tyre.reviewCount})
-          </span>
-        </div>
-
-        {/* Used Tyre Details */}
-        {selectedVariant === "used" && (
-          <div className="flex gap-4 mb-2 text-sm">
-            <span className="text-[#6B7280]">
-              Condition: <span className="font-medium text-[#1F2937]">{tyre.condition || "Good"}</span>
-            </span>
-            <span className="text-[#6B7280]">
-              Tread: <span className="font-medium text-[#1F2937]">{tyre.treadDepth || 5}mm</span>
-            </span>
+          <div className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded-lg">
+            <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+            <span className="text-xs font-bold text-[#1F2937]">{tyre.rating}</span>
+            <span className="text-[10px] text-[#6B7280]">({tyre.reviewCount})</span>
           </div>
-        )}
+        </div>
 
         {/* Features */}
-        <div className="flex flex-wrap gap-2 mb-3">
+        <div className="flex flex-wrap gap-1.5 mb-4">
           {tyre.features.slice(0, 3).map((feature) => (
-            <span key={feature} className="px-2 py-1 bg-[#F9FAFB] text-[#6B7280] text-xs rounded-md">
+            <span key={feature} className="px-2 py-0.5 bg-[#F9FAFB] text-[#6B7280] text-[10px] font-medium rounded-md border border-gray-100">
               {feature}
             </span>
           ))}
         </div>
 
-        {/* Price Chips */}
-        <div className="flex items-center gap-3 mb-3">
-          {tyre.type !== "used" && (
-            <button
-              onClick={() => handleVariantSelect("new")}
-              className={`flex-1 border rounded-lg p-2 text-center transition-all ${selectedVariant === "new"
-                ? "bg-[#F0FDFA] border-[#0D9488] ring-1 ring-[#0D9488]"
-                : "bg-white border-gray-100 hover:border-[#0D9488]"
-                }`}
-            >
-              <div
-                className={`text-[10px] uppercase font-bold tracking-wider mb-0.5 ${selectedVariant === "new" ? "text-[#0D9488]" : "text-gray-400"
+        <div className="mt-auto">
+          {/* Price Chips */}
+          <div className="flex items-center gap-2 mb-3">
+            {tyre.type !== "used" && tyre.newPrice && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleVariantSelect("new")
+                }}
+                className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-all border ${isSelected && selectedVariant === "new"
+                  ? "bg-[#0D9488] text-white border-[#0D9488]"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-[#0D9488]"
                   }`}
               >
-                New
-              </div>
-              <div className={`text-lg font-bold ${selectedVariant === "new" ? "text-gray-900" : "text-gray-500"}`}>
-                ₹{tyre.newPrice?.toLocaleString()}
-              </div>
-            </button>
-          )}
+                New ₹{(tyre.newPrice || tyre.price).toLocaleString()}
+              </button>
+            )}
 
-          <button
-            onClick={() => handleVariantSelect("used")}
-            disabled={!tyre.usedPrice}
-            className={`flex-1 border rounded-lg p-2 text-center transition-all ${!tyre.usedPrice
-              ? "bg-gray-50 border-gray-100 opacity-50 cursor-not-allowed"
-              : selectedVariant === "used"
-                ? "bg-[#FAF5FF] border-[#9333EA] ring-1 ring-[#9333EA]"
-                : "bg-white border-gray-100 hover:border-[#9333EA]"
-              }`}
-          >
-            <div
-              className={`text-[10px] uppercase font-bold tracking-wider mb-0.5 ${selectedVariant === "used" ? "text-[#9333EA]" : "text-gray-400"
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                handleVariantSelect("used")
+              }}
+              disabled={!tyre.usedPrice}
+              className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-all border ${!tyre.usedPrice
+                ? "bg-gray-50 text-gray-400 border-gray-100 cursor-not-allowed"
+                : isSelected && selectedVariant === "used"
+                  ? "bg-[#9333EA] text-white border-[#9333EA]"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-[#9333EA]"
                 }`}
             >
-              Used
-            </div>
-            <div className={`text-lg font-bold ${selectedVariant === "used" ? "text-gray-900" : "text-gray-500"}`}>
-              {tyre.usedPrice ? `₹${tyre.usedPrice.toLocaleString()}` : "N/A"}
-            </div>
-          </button>
-        </div>
-
-        {/* Free Installation Badge */}
-        {/* {tyre.freeInstallation && (
-          <div className="flex items-center gap-2 mb-3 text-[#10B981]">
-            <Truck className="w-4 h-4" />
-            <span className="text-sm font-medium">Free Installation</span>
+              Used {tyre.usedPrice ? `₹${tyre.usedPrice.toLocaleString()}` : "N/A"}
+            </button>
           </div>
-        )} */}
 
-        {/* Show Interest Button */}
-        <Link
-          href={isSelected && tyre.inStock ? `/quote?tyreId=${tyre.id}` : "#"}
-          className={`w-full py-2.5 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${isSelected && tyre.inStock
-            ? selectedVariant === "new"
-              ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white hover:opacity-90"
-              : "bg-[#9333EA] text-white hover:opacity-90"
-            : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed pointer-events-none"
-            }`}
-          aria-disabled={!isSelected || !tyre.inStock}
-        >
-          <ShoppingCart className="w-5 h-5" />
-          Buy now
-        </Link>
+          {/* Buy Button */}
+          <Link
+            href={isSelected && tyre.inStock ? `/quote?tyreId=${tyre.id}` : "#"}
+            onClick={(e) => e.stopPropagation()}
+            className={`w-full py-2 rounded-lg font-semibold flex items-center justify-center gap-2 transition-all text-sm ${isSelected && tyre.inStock
+              ? selectedVariant === "new"
+                ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white hover:opacity-90 shadow-md shadow-teal-500/20"
+                : "bg-[#9333EA] text-white hover:opacity-90 shadow-md shadow-purple-500/20"
+              : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed pointer-events-none"
+              }`}
+            aria-disabled={!isSelected || !tyre.inStock}
+          >
+            <ShoppingCart className="w-4 h-4" />
+            Buy now
+          </Link>
+        </div>
       </div>
 
       <ImageViewer

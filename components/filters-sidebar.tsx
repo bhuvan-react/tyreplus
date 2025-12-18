@@ -58,6 +58,8 @@ export function FiltersSidebar({
         )}
       </div>
 
+      <div className="h-px bg-gray-100" />
+
       {/* Tyre Condition */}
       {/* <div>
         <h4 className="text-sm font-medium text-[#1F2937] mb-3">Tyre Condition</h4>
@@ -120,6 +122,8 @@ export function FiltersSidebar({
         </div>
       </div>
 
+      <div className="h-px bg-gray-100" />
+
       {/* Price Range */}
       <div>
         <h4 className="text-sm font-medium text-[#1F2937] mb-3">Price Range</h4>
@@ -153,6 +157,8 @@ export function FiltersSidebar({
         </div>
       </div>
 
+      <div className="h-px bg-gray-100" />
+
       {/* Rating */}
       <div>
         <h4 className="text-sm font-medium text-[#1F2937] mb-3">Minimum Rating</h4>
@@ -176,6 +182,8 @@ export function FiltersSidebar({
           ))}
         </div>
       </div>
+
+      <div className="h-px bg-gray-100" />
 
       {/* Clear All */}
       <button

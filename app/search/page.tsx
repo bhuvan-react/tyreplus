@@ -271,7 +271,7 @@ function SearchContent() {
               <>
                 <div
                   className={
-                    viewMode === "grid" ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" : "flex flex-col gap-4"
+                    viewMode === "grid" ? "grid grid-cols-1 md:grid-cols-2 gap-6" : "flex flex-col gap-4"
                   }
                 >
                   {filteredTyres.slice(0, visibleCount).map((tyre) => (
