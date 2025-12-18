@@ -1,9 +1,42 @@
+"use client"
+
+import { useState } from "react"
 import { VehicleCard } from "@/components/vehicle-card"
 import { mockVehicles } from "@/lib/mock-data"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
+import { AddVehicleModal } from "@/components/add-vehicle-modal"
 
 export default function MyVehiclesPage() {
+    const [vehicles, setVehicles] = useState(mockVehicles)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [editingVehicle, setEditingVehicle] = useState<any>(null)
+
+    const handleAddVehicle = (newVehicle: any) => {
+        setVehicles([...vehicles, newVehicle])
+        setIsModalOpen(false)
+    }
+
+    const handleEditVehicle = (vehicle: any) => {
+        setEditingVehicle(vehicle)
+        setIsModalOpen(true)
+    }
+
+    const handleUpdateVehicle = (updatedVehicle: any) => {
+        setVehicles(vehicles.map((v) => (v.id === updatedVehicle.id ? updatedVehicle : v)))
+        setIsModalOpen(false)
+        setEditingVehicle(null)
+    }
+
+    const handleDeleteVehicle = (id: string) => {
+        setVehicles(vehicles.filter((v) => v.id !== id))
+    }
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false)
+        setEditingVehicle(null)
+    }
+
     return (
         <div className="container mx-auto px-4 py-10">
             <main className="w-full">
@@ -11,7 +44,13 @@ export default function MyVehiclesPage() {
                     <h1 className="text-3xl font-bold flex items-center gap-2">
                         🚗 MY VEHICLES
                     </h1>
-                    <Button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white rounded-lg hover:opacity-90 transition-opacity">
+                    <Button
+                        onClick={() => {
+                            setEditingVehicle(null)
+                            setIsModalOpen(true)
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white rounded-lg hover:opacity-90 transition-opacity"
+                    >
                         <Plus className="w-4 h-4 mr-2" /> Add Vehicle
                     </Button>
                 </div>
@@ -20,12 +59,23 @@ export default function MyVehiclesPage() {
                 </p>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {mockVehicles.map((vehicle) => (
-                        <VehicleCard key={vehicle.id} vehicle={vehicle} />
+                    {vehicles.map((vehicle) => (
+                        <VehicleCard
+                            key={vehicle.id}
+                            vehicle={vehicle}
+                            onDelete={handleDeleteVehicle}
+                            onEdit={handleEditVehicle}
+                        />
                     ))}
 
                     {/* Add New Vehicle Card */}
-                    <button className="bg-red-50 rounded-xl border-2 border-dashed border-red-300 p-6 flex flex-col items-center justify-center min-h-[400px] hover:bg-red-100 transition-colors group">
+                    <button
+                        onClick={() => {
+                            setEditingVehicle(null)
+                            setIsModalOpen(true)
+                        }}
+                        className="bg-red-50 rounded-xl border-2 border-dashed border-red-300 p-6 flex flex-col items-center justify-center min-h-[400px] hover:bg-red-100 transition-colors group"
+                    >
                         <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                             <Plus className="w-8 h-8 text-[#0D9488]" />
                         </div>
@@ -34,6 +84,14 @@ export default function MyVehiclesPage() {
                     </button>
                 </div>
             </main>
+
+            <AddVehicleModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onAdd={handleAddVehicle}
+                onEdit={handleUpdateVehicle}
+                initialData={editingVehicle}
+            />
         </div>
     )
 }

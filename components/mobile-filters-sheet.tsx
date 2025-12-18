@@ -15,6 +15,7 @@ interface MobileFiltersSheetProps {
   minRating: number
   setMinRating: (rating: number) => void
   resultCount: number
+  brandCounts?: Record<string, number>
 }
 
 export function MobileFiltersSheet({
@@ -29,6 +30,7 @@ export function MobileFiltersSheet({
   minRating,
   setMinRating,
   resultCount,
+  brandCounts = {},
 }: MobileFiltersSheetProps) {
   return (
     <AnimatePresence>
@@ -69,6 +71,7 @@ export function MobileFiltersSheet({
                 setMinRating={setMinRating}
                 onClose={onClose}
                 isMobile={true}
+                brandCounts={brandCounts}
               />
 
               {/* Apply Button */}

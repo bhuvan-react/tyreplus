@@ -257,12 +257,12 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
         </div>
 
         {/* Free Installation Badge */}
-        {tyre.freeInstallation && (
+        {/* {tyre.freeInstallation && (
           <div className="flex items-center gap-2 mb-3 text-[#10B981]">
             <Truck className="w-4 h-4" />
             <span className="text-sm font-medium">Free Installation</span>
           </div>
-        )}
+        )} */}
 
         {/* Show Interest Button */}
         <Link

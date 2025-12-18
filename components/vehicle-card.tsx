@@ -1,5 +1,8 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import { Car } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 interface VehicleCardProps {
     vehicle: {
@@ -11,10 +14,22 @@ interface VehicleCardProps {
         lastService: string
         isPrimary: boolean
         image: string
+        type?: "2w" | "3w" | "4w"
+        make?: string
     }
+    onDelete?: (id: string) => void
+    onEdit?: (vehicle: any) => void
 }
 
-export function VehicleCard({ vehicle }: VehicleCardProps) {
+export function VehicleCard({ vehicle, onDelete, onEdit }: VehicleCardProps) {
+    const router = useRouter()
+
+    const handleSearchTyres = () => {
+        // Use make if available, otherwise try to extract from name
+        const make = vehicle.make || vehicle.name.split(" ")[0]
+        router.push(`/search?make=${encodeURIComponent(make)}`)
+    }
+
     return (
         <div className={`bg-white rounded-xl border p-6 shadow-sm relative ${vehicle.isPrimary ? "border-red-500 ring-1 ring-red-500" : ""}`}>
             {vehicle.isPrimary && (
@@ -25,8 +40,11 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
 
             <div className="flex flex-col items-center mb-6">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3 text-4xl">
-                    {/* Using emoji as placeholder for car image based on design */}
-                    {vehicle.name.includes("Swift") ? "🚗" : "🚙"}
+                    {/* Display icon based on vehicle type */}
+                    {vehicle.type === "2w" ? "🏍️" :
+                        vehicle.type === "3w" ? "🛺" :
+                            vehicle.type === "4w" ? "🚗" :
+                                vehicle.name.includes("Swift") ? "🚗" : "🚙"}
                 </div>
                 <h3 className="text-lg font-bold text-[#1F2937]">{vehicle.name}</h3>
             </div>
@@ -51,14 +69,26 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
             </div>
 
             <div className="space-y-3">
-                <Button variant="outline" className="w-full text-[#059669] border-[#059669] hover:bg-green-50">
+                <Button
+                    variant="outline"
+                    className="w-full text-[#059669] border-[#059669] hover:bg-green-50"
+                    onClick={() => onEdit && onEdit(vehicle)}
+                >
                     Edit
                 </Button>
-                <Button variant="outline" className="w-full text-[#059669] border-[#059669] hover:bg-green-50">
+                <Button
+                    variant="outline"
+                    className="w-full text-[#059669] border-[#059669] hover:bg-green-50"
+                    onClick={handleSearchTyres}
+                >
                     Search Tyres
                 </Button>
-                {!vehicle.isPrimary && (
-                    <Button variant="outline" className="w-full text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600">
+                {!vehicle.isPrimary && onDelete && (
+                    <Button
+                        variant="outline"
+                        className="w-full text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                        onClick={() => onDelete(vehicle.id)}
+                    >
                         Delete
                     </Button>
                 )}

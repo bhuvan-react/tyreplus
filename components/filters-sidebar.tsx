@@ -15,6 +15,7 @@ interface FiltersSidebarProps {
   setMinRating: (rating: number) => void
   onClose?: () => void
   isMobile?: boolean
+  brandCounts?: Record<string, number>
 }
 
 export function FiltersSidebar({
@@ -28,6 +29,7 @@ export function FiltersSidebar({
   setMinRating,
   onClose,
   isMobile = false,
+  brandCounts = {},
 }: FiltersSidebarProps) {
   const handleBrandToggle = (brand: string) => {
     if (selectedBrands.includes(brand)) {
@@ -57,7 +59,7 @@ export function FiltersSidebar({
       </div>
 
       {/* Tyre Condition */}
-      <div>
+      {/* <div>
         <h4 className="text-sm font-medium text-[#1F2937] mb-3">Tyre Condition</h4>
         <div className="flex gap-2">
           {(["all", "new", "used"] as const).map((type) => (
@@ -77,7 +79,7 @@ export function FiltersSidebar({
             </button>
           ))}
         </div>
-      </div>
+      </div> */}
 
       {/* Brands */}
       <div>
@@ -110,7 +112,9 @@ export function FiltersSidebar({
                 onChange={() => handleBrandToggle(brand)}
                 className="sr-only"
               />
-              <span className="text-[#1F2937] text-sm">{brand}</span>
+              <span className="text-[#1F2937] text-sm">
+                {brand} <span className="text-gray-400">({brandCounts[brand] || 0})</span>
+              </span>
             </label>
           ))}
         </div>

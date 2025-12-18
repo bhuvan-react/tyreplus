@@ -60,10 +60,12 @@ function SearchContent() {
     const model = searchParams.get("model")
     const brand = searchParams.get("brand")
 
-    if (make && model) {
-      dispatch(setVehicleType("4W"))
+    if (make) {
+      dispatch(setVehicleType("4W")) // Default to 4W for now, or infer from somewhere
       dispatch(setMake(make))
-      dispatch(setModel(model))
+      if (model) {
+        dispatch(setModel(model))
+      }
     }
 
     if (brand) {
@@ -122,6 +124,33 @@ function SearchContent() {
 
     return result
   }, [tyreType, selectedBrands, selectedPriceRange, minRating, sortBy, tyres])
+
+  // Calculate brand counts based on current filters (except brand filter)
+  const brandCounts = useMemo(() => {
+    let result = [...tyres]
+
+    // Filter by type
+    if (tyreType !== "all") {
+      result = result.filter((t) => t.type === tyreType)
+    }
+
+    // Filter by price range
+    if (selectedPriceRange) {
+      result = result.filter((t) => t.price >= selectedPriceRange.min && t.price <= selectedPriceRange.max)
+    }
+
+    // Filter by rating
+    if (minRating > 0) {
+      result = result.filter((t) => t.rating >= minRating)
+    }
+
+    // Count brands
+    const counts: Record<string, number> = {}
+    result.forEach((t) => {
+      counts[t.brand] = (counts[t.brand] || 0) + 1
+    })
+    return counts
+  }, [tyreType, selectedPriceRange, minRating, tyres])
 
   const vehicleString = search.vehicleType
     ? `${search.make || ""} ${search.model || ""} ${search.variant || ""}`.trim()
@@ -222,6 +251,7 @@ function SearchContent() {
               setSelectedPriceRange={setSelectedPriceRange}
               minRating={minRating}
               setMinRating={setMinRating}
+              brandCounts={brandCounts}
             />
           </div>
 
@@ -299,6 +329,7 @@ function SearchContent() {
         minRating={minRating}
         setMinRating={setMinRating}
         resultCount={filteredTyres.length}
+        brandCounts={brandCounts}
       />
     </div>
   )

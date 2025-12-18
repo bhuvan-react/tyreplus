@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { VehicleSelector } from "@/components/vehicle-selector"
 import { OtpModal } from "@/components/otp-modal"
 import { PopularSearches } from "@/components/popular-searches"
+import { ShopByCategory } from "@/components/shop-by-category"
 import { useAppSelector } from "@/lib/hooks"
 import { Shield, Truck, Wrench, Star, CheckCircle } from "lucide-react"
 
@@ -112,6 +113,9 @@ export default function HomePage() {
 
       {/* Popular Searches */}
       <PopularSearches />
+
+      {/* Shop By Category */}
+      <ShopByCategory />
 
       {/* Features Section */}
       <section className="py-16 bg-white">
