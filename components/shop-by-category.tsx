@@ -14,6 +14,11 @@ const categories = [
         link: "/search?vehicleType=2W",
     },
     {
+        id: "auto-tyres",
+        title: "Auto Tyres",
+        link: "/search?vehicleType=3W",
+    },
+    {
         id: "alloy-wheels",
         title: "Alloy Wheels",
         link: "/search?category=alloy-wheels",
