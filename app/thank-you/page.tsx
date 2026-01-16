@@ -29,7 +29,6 @@ export default function ThankYouPage() {
                 className="max-w-md w-full"
             >
                 <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08)] p-8 md:p-12 text-center">
-                    {/* Success Icon */}
                     <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
