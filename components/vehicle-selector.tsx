@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAppSelector, useAppDispatch } from "@/lib/hooks"
-import { setVehicleType, setMake, setModel, setVariant, setPincode } from "@/lib/store"
+import { setVehicleType, setTyrePosition, setMake, setModel, setVariant, setPincode } from "@/lib/store"
 import { getMakes, getModels, getVariants, type VehicleType } from "@/lib/vehicle-data"
 import { ChevronDown, Check, ShoppingBag, Tag } from "lucide-react"
 import Image from "next/image"
@@ -20,11 +20,19 @@ type Mode = "buy" | "sell"
 export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
   const dispatch = useAppDispatch()
   const search = useAppSelector((state) => state.search)
-  const { isAuthenticated } = useAppSelector((state) => state.auth)
+  const { isAuthenticated, user } = useAppSelector((state) => state.auth)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [mode, setMode] = useState<Mode>("buy")
   const [step, setStep] = useState<Step>("vehicle-select")
   const [showOtpModal, setShowOtpModal] = useState(false)
+  const [mobileNumber, setMobileNumber] = useState("")
+
+  // Pre-fill mobile number if authenticated
+  useEffect(() => {
+    if (user?.mobile) {
+      setMobileNumber(user.mobile)
+    }
+  }, [user])
 
   const vehicleTypes: { type: VehicleType; label: string; icon: React.ReactNode }[] = [
     { type: "2W", label: "2 Wheeler", icon: <Image src="/pulsar-icon.png" alt="2 Wheeler" width={32} height={32} className="w-8 h-8 object-contain" /> },
@@ -32,16 +40,34 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
     { type: "4W", label: "4 Wheeler", icon: <Image src="/mustang-icon.png" alt="4 Wheeler" width={32} height={32} className="w-8 h-8 object-contain" /> },
   ]
 
+  const tyrePositions = ["Front", "Rear", "Both"]
   const makes = search.vehicleType ? getMakes(search.vehicleType) : []
   const models = search.vehicleType && search.make ? getModels(search.vehicleType, search.make) : []
   const variants =
     search.vehicleType && search.make && search.model ? getVariants(search.vehicleType, search.make, search.model) : []
 
   const isSearchEnabled =
-    search.vehicleType && search.make && search.model && search.variant && search.pincode?.length === 6
+    search.vehicleType &&
+    (search.vehicleType !== "2W" || (search.tyrePosition && search.tyrePosition.length > 0)) &&
+    search.make &&
+    search.model &&
+    search.variant &&
+    search.pincode?.length === 6 &&
+    mobileNumber.length === 10
 
   const handleVehicleTypeSelect = (type: VehicleType) => {
     dispatch(setVehicleType(type))
+  }
+
+  const handleTyrePositionSelect = (pos: string) => {
+    let updated: string[] = []
+    if (pos === "Both") {
+      updated = ["Front", "Rear"]
+    } else {
+      updated = [pos]
+    }
+    dispatch(setTyrePosition(updated))
+    setActiveDropdown(null)
   }
 
   const handleMakeSelect = (make: string) => {
@@ -66,9 +92,11 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
 
   const handleSearchClick = () => {
     if (mode === "buy") {
-      if (isAuthenticated) {
+      // If user is authenticated AND the entered mobile number matches their profile
+      if (isAuthenticated && user?.mobile === mobileNumber) {
         setStep("questionnaire")
       } else {
+        // Otherwise (not auth, or changed number), verify the new number
         setShowOtpModal(true)
       }
     } else {
@@ -189,6 +217,60 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
                       exit={{ opacity: 0, y: -10 }}
                       className="space-y-4"
                     >
+                      {/* Tyre Position Dropdown (Only for 2W) */}
+                      {search.vehicleType === "2W" && (
+                        <div className="relative">
+                          <label className="block text-sm font-medium text-[#6B7280] mb-2">Select Tyre Position</label>
+                          <button
+                            onClick={() => setActiveDropdown(activeDropdown === "tyrePosition" ? null : "tyrePosition")}
+                            className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl flex items-center justify-between bg-white hover:border-[#0D9488] transition-colors"
+                          >
+                            <span className={search.tyrePosition?.length ? "text-[#1F2937]" : "text-[#9CA3AF]"}>
+                              {search.tyrePosition?.length === 2 ? "Both" : search.tyrePosition?.join(", ") || "Select tyre position"}
+                            </span>
+                            <ChevronDown
+                              className={`w-5 h-5 text-[#6B7280] transition-transform ${activeDropdown === "tyrePosition" ? "rotate-180" : ""
+                                }`}
+                            />
+                          </button>
+                          <AnimatePresence>
+                            {activeDropdown === "tyrePosition" && (
+                              <motion.div
+                                initial={{ opacity: 0, y: -8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -8 }}
+                                className="absolute z-20 w-full mt-2 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden"
+                              >
+                                {tyrePositions.map((pos) => {
+                                  // Determine if this row should be checked
+                                  const isChecked =
+                                    pos === "Both"
+                                      ? search.tyrePosition?.length === 2
+                                      : search.tyrePosition?.includes(pos)
+
+                                  return (
+                                    <button
+                                      key={pos}
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        handleTyrePositionSelect(pos)
+                                      }}
+                                      className={`w-full px-4 py-3 text-left hover:bg-[#F9FAFB] transition-colors flex items-center gap-3 ${isChecked ? "bg-[#F0FDFA] text-[#0D9488]" : "text-[#1F2937]"
+                                        }`}
+                                    >
+                                      <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${isChecked ? "bg-[#0D9488] border-[#0D9488]" : "border-gray-400 bg-white"}`}>
+                                        {isChecked && <Check className="w-3.5 h-3.5 text-white" />}
+                                      </div>
+                                      {pos}
+                                    </button>
+                                  )
+                                })}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      )}
+
                       {/* Make Dropdown */}
                       <div className="relative">
                         <label className="block text-sm font-medium text-[#6B7280] mb-2">Select Make</label>
@@ -330,6 +412,23 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
                           )}
                         </motion.div>
                       )}
+
+                      {/* Mobile Number Input */}
+                      {search.pincode && search.pincode.length === 6 && (
+                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+                          <label className="block text-sm font-medium text-[#6B7280] mb-2">Mobile Number 📱</label>
+                          <div className="relative">
+                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B7280]">+91</span>
+                            <input
+                              type="tel"
+                              value={mobileNumber}
+                              onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                              placeholder="Enter 10-digit number"
+                              className="w-full pl-12 pr-4 py-3 border border-[#D1D5DB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:border-transparent transition-all"
+                            />
+                          </div>
+                        </motion.div>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -367,7 +466,12 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
         )}
       </AnimatePresence>
 
-      <OtpModal isOpen={showOtpModal} onClose={() => setShowOtpModal(false)} onSuccess={handleOtpSuccess} />
+      <OtpModal
+        isOpen={showOtpModal}
+        onClose={() => setShowOtpModal(false)}
+        onSuccess={handleOtpSuccess}
+        initialPhone={mobileNumber}
+      />
     </div>
   )
 }

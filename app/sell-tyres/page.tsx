@@ -39,7 +39,7 @@ export default function SellTyresPage() {
         { id: "3W", label: "3 Wheeler", icon: Truck },
         { id: "4W", label: "4 Wheeler", icon: Car },
     ]
-    const tyrePositions = ["Front", "Rear"]
+    const tyrePositions = ["Front", "Rear", "Both"]
     const tyreMakes = ["MRF", "CEAT", "Apollo", "Michelin", "Bridgestone"]
     const tyreAges = ["<6 months", "6–12 months", "1–2 years", "2+ years"]
     const timeSlots = ["9–11 AM", "11–1 PM", "2–4 PM", "4–6 PM"]
@@ -54,13 +54,15 @@ export default function SellTyresPage() {
         setActiveDropdown(null)
     }
 
-    const handleTyrePositionToggle = (pos: string) => {
-        const current = (formData.tyrePosition as string[]) || []
-        const updated = current.includes(pos)
-            ? current.filter(p => p !== pos)
-            : [...current, pos]
+    const handleTyrePositionSelect = (pos: string) => {
+        let updated: string[] = []
+        if (pos === "Both") {
+            updated = ["Front", "Rear"]
+        } else {
+            updated = [pos]
+        }
         handleFieldChange("tyrePosition", updated)
-        // Keep dropdown open for multi-select
+        setActiveDropdown(null)
     }
 
     const handleBlur = (field: string) => {
@@ -259,7 +261,7 @@ export default function SellTyresPage() {
                                             }`}
                                     >
                                         <span className={formData.tyrePosition?.length ? "text-[#1F2937]" : "text-[#9CA3AF]"}>
-                                            {formData.tyrePosition?.length ? formData.tyrePosition.join(", ") : "Select tyre position"}
+                                            {formData.tyrePosition?.length === 2 ? "Both" : formData.tyrePosition?.join(", ") || "Select tyre position"}
                                         </span>
                                         <ChevronDown className={`w-5 h-5 text-[#6B7280] transition-transform ${activeDropdown === "tyrePosition" ? "rotate-180" : ""}`} />
                                     </button>
@@ -273,19 +275,26 @@ export default function SellTyresPage() {
                                                 className="absolute z-20 w-full mt-2 bg-white border border-[#E5E7EB] rounded-xl shadow-lg overflow-hidden"
                                             >
                                                 {tyrePositions.map((pos) => {
-                                                    const isSelected = formData.tyrePosition?.includes(pos)
+                                                    // Determine if this row should be checked
+                                                    const isChecked =
+                                                        pos === "Both"
+                                                            ? formData.tyrePosition?.length === 2
+                                                            : formData.tyrePosition?.includes(pos)
+
                                                     return (
                                                         <button
                                                             key={pos}
                                                             type="button"
                                                             onClick={(e) => {
                                                                 e.stopPropagation()
-                                                                handleTyrePositionToggle(pos)
+                                                                handleTyrePositionSelect(pos)
                                                             }}
-                                                            className={`w-full px-4 py-3 text-left hover:bg-[#F9FAFB] transition-colors flex items-center justify-between ${isSelected ? "bg-[#F0FDFA] text-[#0D9488]" : "text-[#1F2937]"}`}
+                                                            className={`w-full px-4 py-3 text-left hover:bg-[#F9FAFB] transition-colors flex items-center gap-3 ${isChecked ? "bg-[#F0FDFA] text-[#0D9488]" : "text-[#1F2937]"}`}
                                                         >
+                                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${isChecked ? "bg-[#0D9488] border-[#0D9488]" : "border-gray-400 bg-white"}`}>
+                                                                {isChecked && <Check className="w-3.5 h-3.5 text-white" />}
+                                                            </div>
                                                             {pos}
-                                                            {isSelected && <Check className="w-4 h-4" />}
                                                         </button>
                                                     )
                                                 })}

@@ -12,12 +12,13 @@ interface OtpModalProps {
   isOpen: boolean
   onClose: () => void
   onSuccess: () => void
+  initialPhone?: string
 }
 
-export function OtpModal({ isOpen, onClose, onSuccess }: OtpModalProps) {
+export function OtpModal({ isOpen, onClose, onSuccess, initialPhone }: OtpModalProps) {
   const dispatch = useAppDispatch()
-  const [step, setStep] = useState<"phone" | "otp" | "success">("phone")
-  const [phone, setPhone] = useState("")
+  const [step, setStep] = useState<"phone" | "otp" | "success">(initialPhone ? "otp" : "phone")
+  const [phone, setPhone] = useState(initialPhone || "")
   const [otp, setOtp] = useState(["", "", "", "", "", ""])
   const [isLoading, setIsLoading] = useState(false)
   const [timer, setTimer] = useState(30)
@@ -92,11 +93,24 @@ export function OtpModal({ isOpen, onClose, onSuccess }: OtpModalProps) {
     otpRefs.current[0]?.focus()
   }
 
+  useEffect(() => {
+    if (isOpen) {
+      if (initialPhone) {
+        setStep("otp")
+        setPhone(initialPhone)
+        setTimer(30)
+        // Focus logic might need a slight delay as elements render
+        setTimeout(() => otpRefs.current[0]?.focus(), 100)
+      } else {
+        setStep("phone")
+        setPhone("")
+      }
+      setOtp(["", "", "", "", "", ""])
+    }
+  }, [isOpen, initialPhone])
+
   const resetModal = () => {
-    setStep("phone")
-    setPhone("")
-    setOtp(["", "", "", "", "", ""])
-    setTimer(30)
+    // Reset handled by useEffect on open
   }
 
   return (
@@ -108,7 +122,6 @@ export function OtpModal({ isOpen, onClose, onSuccess }: OtpModalProps) {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
           onClick={() => {
-            resetModal()
             onClose()
           }}
         >
@@ -123,7 +136,6 @@ export function OtpModal({ isOpen, onClose, onSuccess }: OtpModalProps) {
             <div className="relative bg-[#F0FDFA] px-6 py-8 text-center">
               <button
                 onClick={() => {
-                  resetModal()
                   onClose()
                 }}
                 className="absolute top-4 right-4 p-2 hover:bg-white/50 rounded-full transition-colors"

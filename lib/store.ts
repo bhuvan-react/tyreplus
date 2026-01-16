@@ -19,6 +19,7 @@ interface AuthState {
 
 interface SearchState {
   vehicleType: "2W" | "3W" | "4W" | null
+  tyrePosition: string[]
   make: string | null
   model: string | null
   variant: string | null
@@ -34,6 +35,7 @@ const initialAuthState: AuthState = {
 
 const initialSearchState: SearchState = {
   vehicleType: null,
+  tyrePosition: [],
   make: null,
   model: null,
   variant: null,
@@ -84,9 +86,13 @@ const searchSlice = createSlice({
   reducers: {
     setVehicleType: (state, action: PayloadAction<"2W" | "3W" | "4W" | null>) => {
       state.vehicleType = action.payload
+      state.tyrePosition = []
       state.make = null
       state.model = null
       state.variant = null
+    },
+    setTyrePosition: (state, action: PayloadAction<string[]>) => {
+      state.tyrePosition = action.payload
     },
     setMake: (state, action: PayloadAction<string | null>) => {
       state.make = action.payload
@@ -105,6 +111,7 @@ const searchSlice = createSlice({
     },
     resetSearch: (state) => {
       state.vehicleType = null
+      state.tyrePosition = []
       state.make = null
       state.model = null
       state.variant = null
@@ -114,7 +121,7 @@ const searchSlice = createSlice({
 })
 
 export const { setUser, logout, setLoading, initializeAuth } = authSlice.actions
-export const { setVehicleType, setMake, setModel, setVariant, setPincode, resetSearch } = searchSlice.actions
+export const { setVehicleType, setTyrePosition, setMake, setModel, setVariant, setPincode, resetSearch } = searchSlice.actions
 
 // Store
 export const makeStore = () => {
