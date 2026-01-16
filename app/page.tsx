@@ -14,9 +14,13 @@ export default function HomePage() {
   const router = useRouter()
   const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth)
   const [showOtpModal, setShowOtpModal] = useState(false)
+  const [mode, setMode] = useState<"buy" | "sell">("buy")
 
-  const handleSearch = () => {
-    if (isAuthenticated) {
+  const handleSearch = (currentMode?: "buy" | "sell") => {
+    const searchMode = currentMode || mode
+    if (searchMode === "sell") {
+      router.push("/sell-tyres")
+    } else if (isAuthenticated) {
       router.push("/search")
     } else {
       setShowOtpModal(true)
@@ -55,47 +59,54 @@ export default function HomePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
-              <span className="inline-block px-4 py-2 bg-[#F0FDFA] text-[#0D9488] rounded-full text-lg font-semibold mb-6">
-                🚗 India's #1 Tyre Marketplace
-              </span>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-[#1F2937] leading-tight mb-6">
-                Perfect Tyres for <span className="text-[#0D9488]">Every Vehicle</span>
-              </h1>
-              <p className="text-lg text-[#6B7280] mb-8 max-w-lg">
-                Discover the perfect tyres for your 2-wheeler, 3-wheeler, or 4-wheeler. Quality assured with free
-                installation across India.
-              </p>
-
-              {/* Feature Pills */}
-              <div className="flex flex-wrap gap-3 mb-8">
-                <span className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm text-sm">
-                  <CheckCircle className="w-4 h-4 text-[#10B981]" />
-                  New & Used Tyres
+              {/* Mobile + Desktop: Badge and Heading */}
+              <div className="text-center lg:text-left mb-6 lg:mb-0">
+                <span className="inline-block px-4 py-2 bg-[#F0FDFA] text-[#0D9488] rounded-full text-base lg:text-lg font-semibold mb-4 lg:mb-6">
+                  🚗 India's #1 Tyre Marketplace
                 </span>
-                <span className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm text-sm">
-                  <CheckCircle className="w-4 h-4 text-[#10B981]" />
-                  Free Installation
-                </span>
-                <span className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm text-sm">
-                  <CheckCircle className="w-4 h-4 text-[#10B981]" />
-                  Pan India Delivery
-                </span>
+                <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#1F2937] leading-tight mb-6">
+                  Perfect Tyres for <span className="text-[#0D9488]">Every Vehicle</span>
+                </h1>
               </div>
 
-              {/* Stats */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {stats.map((stat, index) => (
-                  <motion.div
-                    key={stat.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2 + index * 0.1 }}
-                    className="text-center md:text-left"
-                  >
-                    <div className="text-2xl md:text-3xl font-bold text-[#0D9488]">{stat.value}</div>
-                    <div className="text-sm text-[#6B7280]">{stat.label}</div>
-                  </motion.div>
-                ))}
+              {/* Desktop Only: Description, Pills, and Stats */}
+              <div className="hidden lg:block">
+                <p className="text-lg text-[#6B7280] mb-8 max-w-lg">
+                  Discover the perfect tyres for your 2-wheeler, 3-wheeler, or 4-wheeler. Quality assured with free
+                  installation across India.
+                </p>
+
+                {/* Feature Pills */}
+                <div className="flex flex-wrap gap-3 mb-8">
+                  <span className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm text-sm">
+                    <CheckCircle className="w-4 h-4 text-[#10B981]" />
+                    New & Used Tyres
+                  </span>
+                  <span className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm text-sm">
+                    <CheckCircle className="w-4 h-4 text-[#10B981]" />
+                    Free Installation
+                  </span>
+                  <span className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm text-sm">
+                    <CheckCircle className="w-4 h-4 text-[#10B981]" />
+                    Pan India Delivery
+                  </span>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {stats.map((stat, index) => (
+                    <motion.div
+                      key={stat.label}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 + index * 0.1 }}
+                      className="text-center md:text-left"
+                    >
+                      <div className="text-2xl md:text-3xl font-bold text-[#0D9488]">{stat.value}</div>
+                      <div className="text-sm text-[#6B7280]">{stat.label}</div>
+                    </motion.div>
+                  ))}
+                </div>
               </div>
             </motion.div>
 

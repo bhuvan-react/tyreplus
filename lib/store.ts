@@ -1,6 +1,7 @@
 "use client"
 
 import { configureStore, createSlice, type PayloadAction } from "@reduxjs/toolkit"
+import sellTyresReducer from "./sellTyresSlice"
 
 // Types
 interface User {
@@ -121,6 +122,7 @@ export const makeStore = () => {
     reducer: {
       auth: authSlice.reducer,
       search: searchSlice.reducer,
+      sellTyres: sellTyresReducer,
     },
   })
 }
