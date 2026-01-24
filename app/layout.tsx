@@ -11,7 +11,7 @@ import { Footer } from "@/components/footer"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "TyrePlus - India's #1 Tyre Marketplace",
+  title: "Online Tyre Bazaar - India's #1 Tyre Marketplace",
   description:
     "Find the perfect tyres for your vehicle. Quality assured new & used tyres with free installation across India.",
   generator: "v0.app",

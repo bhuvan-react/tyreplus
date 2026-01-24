@@ -137,7 +137,7 @@ export default function HomePage() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-[#1F2937] mb-4">Why Choose TyrePlus?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-[#1F2937] mb-4">Why Choose Online Tyre Bazaar?</h2>
             <p className="text-[#6B7280] max-w-2xl mx-auto">
               We're committed to providing the best tyre shopping experience with quality products and exceptional
               service.
@@ -171,7 +171,7 @@ export default function HomePage() {
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Find Your Perfect Tyres?</h2>
             <p className="text-[#9CA3AF] mb-8 max-w-2xl mx-auto">
-              Join thousands of happy customers who trust TyrePlus for their tyre needs.
+              Join thousands of happy customers who trust Online Tyre Bazaar for their tyre needs.
             </p>
             <button
               onClick={() => document.querySelector("main")?.scrollTo({ top: 0, behavior: "smooth" })}

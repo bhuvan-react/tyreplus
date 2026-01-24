@@ -10,6 +10,8 @@ import { useAppDispatch } from "@/lib/hooks"
 import { setUser } from "@/lib/store"
 import { Eye, EyeOff, User, Phone, Lock, MapPin, ArrowRight, Check, AlertCircle } from "lucide-react"
 import { useGoogleLogin } from "@react-oauth/google"
+import { fetchLocationDetails } from "@/lib/geocode"
+import { authService } from "@/lib/services/auth-service"
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -39,6 +41,53 @@ export default function RegisterPage() {
       return () => clearInterval(interval)
     }
   }, [step, timer])
+
+  // Pincode Data
+  const [city, setCity] = useState("")
+  const [state, setState] = useState("")
+  const [country, setCountry] = useState("")
+  const [district, setDistrict] = useState("")
+  const [isPincodeLoading, setIsPincodeLoading] = useState(false)
+
+  useEffect(() => {
+    if (pincode.length === 6) {
+      const fetchPincodeDetails = async () => {
+        setIsPincodeLoading(true)
+        try {
+          const details = await fetchLocationDetails(pincode)
+
+          if (details) {
+            setCity(details.city)
+            setState(details.state)
+            setCountry(details.country)
+            setDistrict(details.district)
+            setErrors((prev) => {
+              const newErrors = { ...prev };
+              delete newErrors.pincode; // Clear pincode error if valid
+              return newErrors;
+            })
+          } else {
+            setErrors((prev) => ({ ...prev, pincode: "Invalid pincode or not found" }))
+            setCity("")
+            setState("")
+            setCountry("")
+            setDistrict("")
+          }
+        } catch (error) {
+          console.error("Failed to fetch pincode details", error)
+          setErrors((prev) => ({ ...prev, pincode: "Failed to fetch pincode details" }))
+        } finally {
+          setIsPincodeLoading(false)
+        }
+      }
+      fetchPincodeDetails()
+    } else {
+      setCity("")
+      setState("")
+      setCountry("")
+      setDistrict("")
+    }
+  }, [pincode])
 
   // Check for temp Google user from Login page
   useEffect(() => {
@@ -104,11 +153,16 @@ export default function RegisterPage() {
     if (!validateForm()) return
 
     setIsLoading(true)
-    await new Promise((r) => setTimeout(r, 1000))
-    setIsLoading(false)
-    setStep("otp")
-    setTimer(30)
-    setTimeout(() => otpRefs.current[0]?.focus(), 100)
+    try {
+      await authService.sendRegisterOtp(mobile)
+      setIsLoading(false)
+      setStep("otp")
+      setTimer(30)
+      setTimeout(() => otpRefs.current[0]?.focus(), 100)
+    } catch (error) {
+      console.error("Failed to send OTP", error)
+      setIsLoading(false)
+    }
   }
 
   const handleOtpChange = (index: number, value: string) => {
@@ -128,26 +182,47 @@ export default function RegisterPage() {
   }
 
   const handleVerifyOtp = async () => {
-    if (otp.join("").length !== 6) return
+    const otpValue = otp.join("")
+    if (otpValue.length !== 6) return
     setIsLoading(true)
-    await new Promise((r) => setTimeout(r, 1000))
 
-    const user = {
-      id: `user_${Date.now()}`,
-      name,
-      mobile,
-      pincode,
+    try {
+      const registrationData = {
+        name,
+        mobile,
+        password, // Ideally hashed, but sending raw as per typical initial setup or over HTTPS
+        pincode,
+        city,
+        state,
+        country,
+        district,
+        otp: otpValue
+      }
+
+      const response = await authService.completeRegistration(registrationData)
+
+      if (response.data.success) {
+        localStorage.setItem("tyreplus_user", JSON.stringify(response.data.user))
+        if (response.data.token) {
+          localStorage.setItem("auth_token", response.data.token)
+        }
+        dispatch(setUser(response.data.user))
+
+        setIsLoading(false)
+        setStep("success")
+
+        setTimeout(() => {
+          router.push("/")
+        }, 2000)
+      } else {
+        console.error("Registration failed:", response.data.error)
+        // Ideally show error message to user
+        setIsLoading(false)
+      }
+    } catch (error) {
+      console.error("Registration error", error)
+      setIsLoading(false)
     }
-
-    localStorage.setItem("tyreplus_user", JSON.stringify(user))
-    dispatch(setUser(user))
-
-    setIsLoading(false)
-    setStep("success")
-
-    setTimeout(() => {
-      router.push("/")
-    }, 2000)
   }
 
   const handleResendOtp = async () => {
@@ -188,10 +263,10 @@ export default function RegisterPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-[#14B8A6] to-[#0D9488] rounded-xl flex items-center justify-center">
-              <span className="text-white font-bold text-xl">T+</span>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden">
+              <img src="/otb-logo.png" alt="OTB" className="w-full h-full object-cover" />
             </div>
-            <span className="text-2xl font-bold text-[#1F2937]">TyrePlus</span>
+            <span className="text-2xl font-bold text-[#1F2937]">Online Tyre Bazaar</span>
           </Link>
           <h1 className="text-2xl md:text-3xl font-bold text-[#1F2937] mb-2">
             {step === "details" && "Create Account 🚀"}
@@ -448,6 +523,13 @@ export default function RegisterPage() {
                       {errors.pincode}
                     </p>
                   )}
+                  {isPincodeLoading && <p className="text-sm text-[#6B7280] mt-1">Fetching location details...</p>}
+                  {!isPincodeLoading && city && state && (
+                    <p className="text-sm text-[#0D9488] mt-1 flex items-center gap-1">
+                      <Check className="w-4 h-4" />
+                      {city}, {district}, {state}, {country}
+                    </p>
+                  )}
                 </div>
 
                 {/* Terms & Conditions */}
@@ -586,7 +668,7 @@ export default function RegisterPage() {
                   <Check className="w-10 h-10 text-white" />
                 </div>
                 <h2 className="text-2xl font-bold text-[#1F2937] mb-2">Account Created!</h2>
-                <p className="text-[#6B7280] mb-6">Welcome to TyrePlus, {name.split(" ")[0]}!</p>
+                <p className="text-[#6B7280] mb-6">Welcome to Online Tyre Bazaar, {name.split(" ")[0]}!</p>
                 <div className="w-8 h-8 border-2 border-[#0D9488] border-t-transparent rounded-full animate-spin mx-auto" />
                 <p className="text-sm text-[#9CA3AF] mt-4">Redirecting to homepage...</p>
               </motion.div>

@@ -9,6 +9,10 @@ interface User {
   name: string
   mobile: string
   pincode?: string
+  city?: string
+  state?: string
+  country?: string
+  district?: string
 }
 
 interface AuthState {
@@ -24,6 +28,9 @@ interface SearchState {
   model: string | null
   variant: string | null
   pincode: string | null
+  city: string | null
+  state: string | null
+  tyreSize: string | null
 }
 
 // Initial states
@@ -40,6 +47,9 @@ const initialSearchState: SearchState = {
   model: null,
   variant: null,
   pincode: null,
+  city: null,
+  state: null,
+  tyreSize: null,
 }
 
 // Auth Slice
@@ -108,6 +118,19 @@ const searchSlice = createSlice({
     },
     setPincode: (state, action: PayloadAction<string | null>) => {
       state.pincode = action.payload
+      if (!action.payload) {
+        state.city = null
+        state.state = null
+      }
+    },
+    setCity: (state, action: PayloadAction<string | null>) => {
+      state.city = action.payload
+    },
+    setState: (state, action: PayloadAction<string | null>) => {
+      state.state = action.payload
+    },
+    setTyreSize: (state, action: PayloadAction<string | null>) => {
+      state.tyreSize = action.payload
     },
     resetSearch: (state) => {
       state.vehicleType = null
@@ -116,12 +139,15 @@ const searchSlice = createSlice({
       state.model = null
       state.variant = null
       state.pincode = null
+      state.city = null
+      state.state = null
+      state.tyreSize = null
     },
   },
 })
 
 export const { setUser, logout, setLoading, initializeAuth } = authSlice.actions
-export const { setVehicleType, setTyrePosition, setMake, setModel, setVariant, setPincode, resetSearch } = searchSlice.actions
+export const { setVehicleType, setTyrePosition, setMake, setModel, setVariant, setPincode, setCity, setState, setTyreSize, resetSearch } = searchSlice.actions
 
 // Store
 export const makeStore = () => {

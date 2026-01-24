@@ -1,14 +1,20 @@
 "use client"
 
+import { useRouter } from "next/navigation"
+
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAppSelector, useAppDispatch } from "@/lib/hooks"
-import { setVehicleType, setTyrePosition, setMake, setModel, setVariant, setPincode } from "@/lib/store"
-import { getMakes, getModels, getVariants, type VehicleType } from "@/lib/vehicle-data"
-import { ChevronDown, Check, ShoppingBag, Tag } from "lucide-react"
+import { setVehicleType, setTyrePosition, setMake, setModel, setVariant, setPincode, setCity, setState, setUser, setTyreSize } from "@/lib/store"
+import { type VehicleType } from "@/lib/vehicle-data"
+import { fetchLocationDetails } from "@/lib/geocode"
+import { ChevronDown, Check, ShoppingBag, Tag, MapPin, Loader2, Phone, ArrowRight } from "lucide-react"
 import Image from "next/image"
 import { TyreQuestionnaire, type QuestionnaireData } from "./tyre-questionnaire"
 import { OtpModal } from "@/components/otp-modal"
+import { vehicleTyreSizes, getAllUniqueSizes } from "@/lib/tyre-data"
+import { authService } from "@/lib/services/auth-service"
+import { vehicleService } from "@/lib/services/vehicle-service"
 
 interface VehicleSelectorProps {
   onSearch: (mode?: "buy" | "sell") => void
@@ -18,6 +24,7 @@ type Step = "vehicle-select" | "questionnaire"
 type Mode = "buy" | "sell"
 
 export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
+  const router = useRouter()
   const dispatch = useAppDispatch()
   const search = useAppSelector((state) => state.search)
   const { isAuthenticated, user } = useAppSelector((state) => state.auth)
@@ -25,12 +32,34 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
   const [mode, setMode] = useState<Mode>("buy")
   const [step, setStep] = useState<Step>("vehicle-select")
   const [showOtpModal, setShowOtpModal] = useState(false)
+  const [name, setName] = useState("")
   const [mobileNumber, setMobileNumber] = useState("")
+  const [isLocating, setIsLocating] = useState(false)
+  const [locationError, setLocationError] = useState("")
 
-  // Pre-fill mobile number if authenticated
+  // Sell Flow State
+  const [sellStep, setSellStep] = useState<"phone" | "otp">("phone")
+  const [sellMobile, setSellMobile] = useState("")
+  const [sellOtp, setSellOtp] = useState(["", "", "", "", "", ""])
+  const [sellTimer, setSellTimer] = useState(0)
+  const [isSellLoading, setIsSellLoading] = useState(false)
+  const sellOtpRefs = useState<(HTMLInputElement | null)[]>([])[0] // minimalistic ref approach or use useRef properly if needed
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout
+    if (sellStep === "otp" && sellTimer > 0) {
+      interval = setInterval(() => setSellTimer((t) => t - 1), 1000)
+    }
+    return () => clearInterval(interval)
+  }, [sellStep, sellTimer])
+
+  // Pre-fill mobile number and name if authenticated
   useEffect(() => {
     if (user?.mobile) {
       setMobileNumber(user.mobile)
+    }
+    if (user?.name) {
+      setName(user.name)
     }
   }, [user])
 
@@ -41,10 +70,87 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
   ]
 
   const tyrePositions = ["Front", "Rear", "Both"]
-  const makes = search.vehicleType ? getMakes(search.vehicleType) : []
-  const models = search.vehicleType && search.make ? getModels(search.vehicleType, search.make) : []
-  const variants =
-    search.vehicleType && search.make && search.model ? getVariants(search.vehicleType, search.make, search.model) : []
+  const [makes, setMakes] = useState<string[]>([])
+  const [models, setModels] = useState<string[]>([])
+  const [variants, setVariants] = useState<string[]>([])
+  const [availableTyreSizes, setAvailableTyreSizes] = useState<string[]>([])
+
+  // Fetch Makes
+  useEffect(() => {
+    if (search.vehicleType) {
+      const fetchMakes = async () => {
+        try {
+          const response = await vehicleService.getMakes(search.vehicleType!)
+          setMakes(response.data.makes || [])
+        } catch (error) {
+          console.error("Failed to fetch makes", error)
+          setMakes([])
+        }
+      }
+      fetchMakes()
+    } else {
+      setMakes([])
+    }
+  }, [search.vehicleType])
+
+  // Fetch Models
+  useEffect(() => {
+    if (search.vehicleType && search.make) {
+      const fetchModels = async () => {
+        try {
+          const response = await vehicleService.getModels(search.vehicleType!, search.make!)
+          setModels(response.data.models || [])
+        } catch (error) {
+          console.error("Failed to fetch models", error)
+          setModels([])
+        }
+      }
+      fetchModels()
+    } else {
+      setModels([])
+    }
+  }, [search.vehicleType, search.make])
+
+  // Fetch Variants
+  useEffect(() => {
+    if (search.vehicleType && search.make && search.model) {
+      const fetchVariants = async () => {
+        try {
+          const response = await vehicleService.getVariants(search.vehicleType!, search.make!, search.model!)
+          setVariants(response.data.variants || [])
+        } catch (error) {
+          console.error("Failed to fetch variants", error)
+          setVariants([])
+        }
+      }
+      fetchVariants()
+    } else {
+      setVariants([])
+    }
+  }, [search.vehicleType, search.make, search.model])
+
+  // Fetch Tyre Sizes
+  useEffect(() => {
+    if (search.make && search.model && search.variant) {
+      const fetchSizes = async () => {
+        try {
+          const response = await vehicleService.getTyreSizes(search.make!, search.model!, search.variant!)
+          if (response.data.sizes && response.data.sizes.length > 0) {
+            setAvailableTyreSizes(response.data.sizes)
+          } else {
+            // Fallback to all unique sizes if API returns empty, or just empty if strict
+            setAvailableTyreSizes(getAllUniqueSizes())
+          }
+        } catch (error) {
+          console.error("Failed to fetch tyre sizes", error)
+          setAvailableTyreSizes(getAllUniqueSizes())
+        }
+      }
+      fetchSizes()
+    } else {
+      setAvailableTyreSizes([])
+    }
+  }, [search.make, search.model, search.variant])
 
   const isSearchEnabled =
     search.vehicleType &&
@@ -52,7 +158,10 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
     search.make &&
     search.model &&
     search.variant &&
+    search.tyreSize &&
+    search.tyreSize &&
     search.pincode?.length === 6 &&
+    name.trim().length >= 2 &&
     mobileNumber.length === 10
 
   const handleVehicleTypeSelect = (type: VehicleType) => {
@@ -85,9 +194,33 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
     setActiveDropdown(null)
   }
 
-  const handlePincodeChange = (value: string) => {
+  const handleTyreSizeSelect = (size: string) => {
+    dispatch(setTyreSize(size))
+    setActiveDropdown(null)
+  }
+
+  const handlePincodeChange = async (value: string) => {
     const numericValue = value.replace(/\D/g, "").slice(0, 6)
     dispatch(setPincode(numericValue))
+    setLocationError("")
+
+    if (numericValue.length === 6) {
+      setIsLocating(true)
+      const details = await fetchLocationDetails(numericValue)
+      setIsLocating(false)
+
+      if (details) {
+        dispatch(setCity(details.district))
+        dispatch(setState(details.state))
+      } else {
+        setLocationError("Invalid Pincode")
+        dispatch(setCity(null))
+        dispatch(setState(null))
+      }
+    } else {
+      dispatch(setCity(null))
+      dispatch(setState(null))
+    }
   }
 
   const handleSearchClick = () => {
@@ -114,6 +247,105 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
     // Here we could save the questionnaire data to the store if needed
     // For now, we just redirect to search page as requested
     onSearch("buy")
+  }
+
+  // Sell Flow Handlers
+  const handleSellPhoneSubmit = async () => {
+    if (sellMobile.length !== 10) return
+    setIsSellLoading(true)
+    try {
+      await authService.sendQuickOtp(sellMobile)
+
+      setIsSellLoading(false)
+      setSellStep("otp")
+      setSellTimer(30)
+      // Focus first OTP input
+      setTimeout(() => {
+        const firstInput = document.getElementById("sell-otp-0")
+        if (firstInput) firstInput.focus()
+      }, 100)
+    } catch (error) {
+      console.error("Failed to send OTP", error)
+      setIsSellLoading(false)
+    }
+  }
+
+  const handleSellOtpChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return
+    const newOtp = [...sellOtp]
+    newOtp[index] = value.slice(-1)
+    setSellOtp(newOtp)
+
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`sell-otp-${index + 1}`)
+      if (nextInput) nextInput.focus()
+    }
+  }
+
+  // Auto-submit effect
+  useEffect(() => {
+    if (sellStep === "otp" && sellOtp.every(d => d !== "")) {
+      handleSellOtpSubmit()
+    }
+  }, [sellOtp, sellStep])
+
+
+  const handleSellOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
+    if (e.key === "Backspace" && !sellOtp[index] && index > 0) {
+      const prevInput = document.getElementById(`sell-otp-${index - 1}`)
+      if (prevInput) prevInput.focus()
+    }
+  }
+
+  const handleSellOtpSubmit = async () => {
+    const otpValue = sellOtp.join("")
+    if (otpValue.length !== 6) return
+
+    // Prevent double submission if already loading
+    if (isSellLoading) return
+
+    setIsSellLoading(true)
+
+    try {
+      const response = await authService.verifyQuickOtp(sellMobile, otpValue)
+
+      if (response.data.success) {
+        // Save user to store
+        const user = response.data.user || {
+          id: `user_${Date.now()}`,
+          name: "Guest Seller",
+          mobile: sellMobile,
+        }
+
+        localStorage.setItem("tyreplus_user", JSON.stringify(user))
+        dispatch(setUser(user))
+
+        setIsSellLoading(false)
+        router.push("/sell-tyres")
+      } else {
+        console.error("OTP Verification failed")
+        setIsSellLoading(false)
+      }
+    } catch (error) {
+      console.error("Failed to verify OTP", error)
+      setIsSellLoading(false)
+    }
+  }
+
+  const handleSellResendOtp = async () => {
+    if (sellTimer > 0) return
+    setIsSellLoading(true)
+    try {
+      await authService.sendQuickOtp(sellMobile)
+      setIsSellLoading(false)
+      setSellTimer(30)
+      setSellOtp(["", "", "", "", "", ""])
+      const firstInput = document.getElementById("sell-otp-0")
+      if (firstInput) firstInput.focus()
+    } catch (error) {
+      console.error("Failed to resend OTP", error)
+      setIsSellLoading(false)
+    }
   }
 
   return (
@@ -153,18 +385,114 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
             </h2>
 
             {mode === "sell" ? (
-              <div className="text-center py-12">
-                <div className="bg-teal-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Tag className="w-8 h-8 text-[#0D9488]" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Ready to sell your tyres?</h3>
-                <p className="text-gray-500 mb-6">Click below to fill in your tyre details</p>
-                <button
-                  onClick={() => onSearch("sell")}
-                  className="px-8 py-4 bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white font-semibold rounded-xl hover:opacity-90 transition-opacity shadow-lg shadow-teal-500/30"
-                >
-                  Continue to Sell →
-                </button>
+              <div className="max-w-md mx-auto">
+                <AnimatePresence mode="wait">
+                  {sellStep === "phone" ? (
+                    <motion.div
+                      key="sell-phone"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                    >
+                      <div className="text-center mb-6">
+                        <div className="bg-teal-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Tag className="w-8 h-8 text-[#0D9488]" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Ready to sell your tyres?</h3>
+                        <p className="text-gray-500">Enter your mobile number to get started</p>
+                      </div>
+
+                      <div className="relative mb-4">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#6B7280]">+91</span>
+                        <input
+                          type="tel"
+                          value={sellMobile}
+                          onChange={(e) => setSellMobile(e.target.value.replace(/\D/g, "").slice(0, 10))}
+                          placeholder="Enter 10-digit number"
+                          className="w-full pl-12 pr-4 py-4 border border-[#D1D5DB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:border-transparent transition-all text-lg"
+                        />
+                      </div>
+
+                      <button
+                        onClick={handleSellPhoneSubmit}
+                        disabled={sellMobile.length !== 10 || isSellLoading}
+                        className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${sellMobile.length === 10 && !isSellLoading
+                          ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white hover:opacity-90 shadow-lg shadow-teal-500/30"
+                          : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed"
+                          }`}
+                      >
+                        {isSellLoading ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <>
+                            Get OTP <ArrowRight className="w-5 h-5" />
+                          </>
+                        )}
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="sell-otp"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                    >
+                      <div className="text-center mb-6">
+                        <div className="bg-teal-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                          <Phone className="w-8 h-8 text-[#0D9488]" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">Verify Mobile Number</h3>
+                        <p className="text-gray-500">
+                          Enter OTP sent to <span className="font-medium text-gray-900">+91 {sellMobile}</span>
+                        </p>
+                        <button
+                          onClick={() => setSellStep("phone")}
+                          className="text-sm text-[#0D9488] hover:underline mt-1"
+                        >
+                          Change Number
+                        </button>
+                      </div>
+
+                      <div className="flex justify-center gap-2 mb-6">
+                        {sellOtp.map((digit, index) => (
+                          <input
+                            key={index}
+                            id={`sell-otp-${index}`}
+                            type="text"
+                            inputMode="numeric"
+                            autoComplete="one-time-code"
+                            value={digit}
+                            onChange={(e) => handleSellOtpChange(index, e.target.value)}
+                            onKeyDown={(e) => handleSellOtpKeyDown(index, e)}
+                            className="w-12 h-12 text-center text-xl font-semibold border border-[#D1D5DB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:border-transparent transition-all"
+                          />
+                        ))}
+                      </div>
+
+                      <div className="text-center mb-6">
+                        <button
+                          onClick={handleSellResendOtp}
+                          disabled={sellTimer > 0 || isSellLoading}
+                          className={`text-sm font-medium ${sellTimer > 0 ? "text-gray-400" : "text-[#0D9488] hover:underline"}`}
+                        >
+                          {sellTimer > 0 ? `Resend OTP in ${sellTimer}s` : "Resend OTP"}
+                        </button>
+                      </div>
+
+                      {/* We can hide this verification button if we want auto-submit only, but good to have as backup */}
+                      {/* <button
+                        onClick={handleSellOtpSubmit}
+                        disabled={sellOtp.some(d => d === "") || isSellLoading}
+                         className={`w-full py-4 rounded-xl font-bold transition-all ${!sellOtp.some(d => d === "") && !isSellLoading
+                            ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white hover:opacity-90 shadow-lg shadow-teal-500/30"
+                            : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed"
+                          }`}
+                      >
+                         {isSellLoading ? <Loader2 className="w-5 h-5 animate-spin mx-auto" /> : "Verify & Continue"}
+                      </button> */}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             ) : (
               <>
@@ -389,8 +717,48 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
                         </motion.div>
                       )}
 
-                      {/* Pincode Input */}
+                      {/* Tyre Size Dropdown */}
                       {search.variant && (
+                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="relative">
+                          <label className="block text-sm font-medium text-[#6B7280] mb-2">Select Tyre Size</label>
+                          <button
+                            onClick={() => setActiveDropdown(activeDropdown === "tyreSize" ? null : "tyreSize")}
+                            className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl flex items-center justify-between bg-white hover:border-[#0D9488] transition-colors"
+                          >
+                            <span className={search.tyreSize ? "text-[#1F2937]" : "text-[#9CA3AF]"}>
+                              {search.tyreSize || "Choose a size"}
+                            </span>
+                            <ChevronDown
+                              className={`w-5 h-5 text-[#6B7280] transition-transform ${activeDropdown === "tyreSize" ? "rotate-180" : ""
+                                }`}
+                            />
+                          </button>
+                          <AnimatePresence>
+                            {activeDropdown === "tyreSize" && (
+                              <motion.div
+                                initial={{ opacity: 0, y: -8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -8 }}
+                                className="absolute z-20 w-full mt-2 bg-white border border-[#E5E7EB] rounded-xl shadow-lg max-h-60 overflow-y-auto"
+                              >
+                                {availableTyreSizes.map((size) => (
+                                  <button
+                                    key={size}
+                                    onClick={() => handleTyreSizeSelect(size)}
+                                    className={`w-full px-4 py-3 text-left hover:bg-[#F9FAFB] transition-colors ${search.tyreSize === size ? "bg-[#F0FDFA] text-[#0D9488]" : "text-[#1F2937]"
+                                      }`}
+                                  >
+                                    {size}
+                                  </button>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
+                      )}
+
+                      {/* Pincode Input */}
+                      {search.tyreSize && (
                         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
                           <label className="block text-sm font-medium text-[#6B7280] mb-2">Enter Pincode 📍</label>
                           <input
@@ -401,20 +769,45 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
                             className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:border-transparent transition-all"
                           />
                           {search.pincode && search.pincode.length === 6 && (
-                            <motion.p
+                            <motion.div
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
-                              className="text-sm text-[#10B981] mt-2 flex items-center gap-1"
+                              className="mt-2"
                             >
-                              <Check className="w-4 h-4" />
-                              Service available in your area!
-                            </motion.p>
+                              {isLocating ? (
+                                <div className="flex items-center gap-2 text-sm text-[#6B7280]">
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                  Detecting location...
+                                </div>
+                              ) : search.city && search.state ? (
+                                <div className="flex items-center gap-2 text-sm text-[#10B981]">
+                                  <MapPin className="w-4 h-4" />
+                                  {search.city}, {search.state}
+                                </div>
+                              ) : locationError ? (
+                                <div className="text-sm text-red-500">{locationError}</div>
+                              ) : null}
+                            </motion.div>
                           )}
                         </motion.div>
                       )}
 
+                      {/* Name Input */}
+                      {search.tyreSize && (
+                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+                          <label className="block text-sm font-medium text-[#6B7280] mb-2">Full Name 👤</label>
+                          <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Enter your full name"
+                            className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:border-transparent transition-all"
+                          />
+                        </motion.div>
+                      )}
+
                       {/* Mobile Number Input */}
-                      {search.pincode && search.pincode.length === 6 && (
+                      {search.tyreSize && name.trim().length >= 2 && (
                         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
                           <label className="block text-sm font-medium text-[#6B7280] mb-2">Mobile Number 📱</label>
                           <div className="relative">
@@ -471,7 +864,8 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
         onClose={() => setShowOtpModal(false)}
         onSuccess={handleOtpSuccess}
         initialPhone={mobileNumber}
+        name={name}
       />
-    </div>
+    </div >
   )
 }

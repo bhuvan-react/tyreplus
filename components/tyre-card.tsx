@@ -260,7 +260,7 @@ export function TyreCard({ tyre, isSelected, onSelect }: TyreCardProps) {
             aria-disabled={!isSelected || !tyre.inStock}
           >
             <ShoppingCart className="w-4 h-4" />
-            Buy now
+            Get this Lead
           </Link>
         </div>
       </div>

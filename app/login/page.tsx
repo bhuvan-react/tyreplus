@@ -10,6 +10,7 @@ import { useAppDispatch } from "@/lib/hooks"
 import { setUser } from "@/lib/store"
 import { Eye, EyeOff, Phone, Lock, Shield, Truck, Star, Award, ArrowRight, Check } from "lucide-react"
 import { useGoogleLogin } from "@react-oauth/google"
+import { authService } from "@/lib/services/auth-service"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -48,18 +49,26 @@ export default function LoginPage() {
     setIsLoading(true)
     setError("")
 
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 1500))
+    try {
+      const response = await authService.login(mobile, password)
 
-    const user = {
-      id: `user_${Date.now()}`,
-      name: "John Doe",
-      mobile,
+      if (response.data.success) {
+        const user = response.data.user
+        localStorage.setItem("tyreplus_user", JSON.stringify(user))
+        if (response.data.token) {
+          localStorage.setItem("auth_token", response.data.token)
+        }
+        dispatch(setUser(user))
+        router.push("/")
+      } else {
+        setError(response.data.error || "Login failed")
+      }
+    } catch (err) {
+      console.error("Login error:", err)
+      setError("An unexpected error occurred")
+    } finally {
+      setIsLoading(false)
     }
-
-    localStorage.setItem("tyreplus_user", JSON.stringify(user))
-    dispatch(setUser(user))
-    router.push("/")
   }
 
   const handleGoogleLogin = useGoogleLogin({
@@ -159,10 +168,10 @@ export default function LoginPage() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
           <div className="text-center mb-8">
             <Link href="/" className="inline-flex items-center gap-2 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#14B8A6] to-[#0D9488] rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold text-xl">T+</span>
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center overflow-hidden">
+                <img src="/otb-logo.png" alt="OTB" className="w-full h-full object-cover" />
               </div>
-              <span className="text-2xl font-bold text-[#1F2937]">TyrePlus</span>
+              <span className="text-2xl font-bold text-[#1F2937]">Online Tyre Bazaar</span>
             </Link>
             <h1 className="text-2xl md:text-3xl font-bold text-[#1F2937] mb-2">Welcome Back! 👋</h1>
             <p className="text-[#6B7280]">Sign in to continue to your account</p>
@@ -298,7 +307,7 @@ export default function LoginPage() {
                     <div className="w-full border-t border-[#E5E7EB]" />
                   </div>
                   <div className="relative flex justify-center text-sm">
-                    <span className="px-4 bg-white text-[#9CA3AF]">New to TyrePlus?</span>
+                    <span className="px-4 bg-white text-[#9CA3AF]">New to Online Tyre Bazaar?</span>
                   </div>
                 </div>
 
@@ -490,7 +499,7 @@ export default function LoginPage() {
           transition={{ delay: 0.2 }}
           className="max-w-md"
         >
-          <h2 className="text-3xl font-bold text-white mb-4">Why TyrePlus? 🛞</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Why Online Tyre Bazaar? 🛞</h2>
           <p className="text-white/80 mb-8">Join thousands of happy customers who trust us for their tyre needs.</p>
 
           <div className="space-y-6">

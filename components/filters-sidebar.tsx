@@ -16,6 +16,9 @@ interface FiltersSidebarProps {
   onClose?: () => void
   isMobile?: boolean
   brandCounts?: Record<string, number>
+  availableSizes?: string[]
+  selectedTyreSizes?: string[]
+  setSelectedTyreSizes?: (sizes: string[]) => void
 }
 
 export function FiltersSidebar({
@@ -30,6 +33,9 @@ export function FiltersSidebar({
   onClose,
   isMobile = false,
   brandCounts = {},
+  availableSizes = [],
+  selectedTyreSizes = [],
+  setSelectedTyreSizes,
 }: FiltersSidebarProps) {
   const handleBrandToggle = (brand: string) => {
     if (selectedBrands.includes(brand)) {
@@ -39,11 +45,22 @@ export function FiltersSidebar({
     }
   }
 
+  const handleSizeToggle = (size: string) => {
+    if (setSelectedTyreSizes) {
+      if (selectedTyreSizes.includes(size)) {
+        setSelectedTyreSizes(selectedTyreSizes.filter((s) => s !== size))
+      } else {
+        setSelectedTyreSizes([...selectedTyreSizes, size])
+      }
+    }
+  }
+
   const handleClearAll = () => {
     setTyreType("all")
     setSelectedBrands([])
     setSelectedPriceRange(null)
     setMinRating(0)
+    if (setSelectedTyreSizes) setSelectedTyreSizes([])
   }
 
   const content = (
@@ -59,6 +76,48 @@ export function FiltersSidebar({
       </div>
 
       <div className="h-px bg-gray-100" />
+
+      {/* Tyre Size */}
+      {availableSizes.length > 0 && (
+        <>
+          <div>
+            <h4 className="text-sm font-medium text-[#1F2937] mb-3">Tyre Size</h4>
+            <div className="space-y-2">
+              {availableSizes.map((size) => (
+                <label key={size} className="flex items-center gap-3 cursor-pointer group">
+                  <div
+                    className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${selectedTyreSizes.includes(size)
+                      ? "bg-[#0D9488] border-[#0D9488]"
+                      : "border-[#D1D5DB] group-hover:border-[#0D9488]"
+                      }`}
+                  >
+                    {selectedTyreSizes.includes(size) && (
+                      <motion.svg
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="w-3 h-3 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </motion.svg>
+                    )}
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={selectedTyreSizes.includes(size)}
+                    onChange={() => handleSizeToggle(size)}
+                    className="sr-only"
+                  />
+                  <span className="text-[#1F2937] text-sm">{size}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div className="h-px bg-gray-100" />
+        </>
+      )}
 
       {/* Tyre Condition */}
       {/* <div>

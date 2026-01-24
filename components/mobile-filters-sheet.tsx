@@ -16,6 +16,9 @@ interface MobileFiltersSheetProps {
   setMinRating: (rating: number) => void
   resultCount: number
   brandCounts?: Record<string, number>
+  availableSizes?: string[]
+  selectedTyreSizes?: string[]
+  setSelectedTyreSizes?: (sizes: string[]) => void
 }
 
 export function MobileFiltersSheet({
@@ -31,6 +34,9 @@ export function MobileFiltersSheet({
   setMinRating,
   resultCount,
   brandCounts = {},
+  availableSizes = [],
+  selectedTyreSizes = [],
+  setSelectedTyreSizes,
 }: MobileFiltersSheetProps) {
   return (
     <AnimatePresence>
@@ -72,6 +78,9 @@ export function MobileFiltersSheet({
                 onClose={onClose}
                 isMobile={true}
                 brandCounts={brandCounts}
+                availableSizes={availableSizes}
+                selectedTyreSizes={selectedTyreSizes}
+                setSelectedTyreSizes={setSelectedTyreSizes}
               />
 
               {/* Apply Button */}

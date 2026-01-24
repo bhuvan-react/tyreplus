@@ -10,7 +10,7 @@ import { TyreCard } from "@/components/tyre-card"
 import { TyreCardSkeleton } from "@/components/tyre-card-skeleton"
 import { MobileFiltersSheet } from "@/components/mobile-filters-sheet"
 import { tyreService } from "@/lib/services/tyre-service"
-import { type Tyre } from "@/lib/tyre-data"
+import { type Tyre, vehicleTyreSizes, getAllUniqueSizes } from "@/lib/tyre-data"
 import { ChevronRight, SlidersHorizontal, Grid, List } from "lucide-react"
 import {
   Select,
@@ -30,6 +30,7 @@ function SearchContent() {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([])
   const [selectedPriceRange, setSelectedPriceRange] = useState<{ min: number; max: number } | null>(null)
   const [minRating, setMinRating] = useState(0)
+  const [selectedTyreSizes, setSelectedTyreSizes] = useState<string[]>([])
   const [sortBy, setSortBy] = useState<"popular" | "price-low" | "price-high" | "rating">("popular")
   const [selectedTyre, setSelectedTyre] = useState<string | null>(null)
   const [showFilters, setShowFilters] = useState(false)
@@ -37,6 +38,15 @@ function SearchContent() {
   const [isLoading, setIsLoading] = useState(true)
   const [visibleCount, setVisibleCount] = useState(12)
   const [tyres, setTyres] = useState<Tyre[]>([])
+
+  // Determine available tyre sizes based on vehicle selection
+  const availableSizes = useMemo(() => {
+    if (search.make && search.model && search.variant && vehicleTyreSizes[search.make]?.[search.model]?.[search.variant]) {
+      return vehicleTyreSizes[search.make][search.model][search.variant]
+    }
+    // If no specific vehicle selected (or data missing), show all unique sizes from our tyre data
+    return getAllUniqueSizes()
+  }, [search.make, search.model, search.variant])
 
   // Fetch tyres
   useEffect(() => {
@@ -73,6 +83,13 @@ function SearchContent() {
     }
   }, [searchParams, dispatch])
 
+  // Sync store tyreSize to local filter
+  useEffect(() => {
+    if (search.tyreSize) {
+      setSelectedTyreSizes([search.tyreSize])
+    }
+  }, [search.tyreSize])
+
   // Simulate loading on mount and filter change
   useEffect(() => {
     setIsLoading(true)
@@ -81,7 +98,7 @@ function SearchContent() {
       setIsLoading(false)
     }, 1500)
     return () => clearTimeout(timer)
-  }, [tyreType, selectedBrands, selectedPriceRange, minRating, sortBy, search.make, search.model])
+  }, [tyreType, selectedBrands, selectedTyreSizes, selectedPriceRange, minRating, sortBy, search.make, search.model])
 
   // Filter and sort tyres
   const filteredTyres = useMemo(() => {
@@ -95,6 +112,11 @@ function SearchContent() {
     // Filter by brands
     if (selectedBrands.length > 0) {
       result = result.filter((t) => selectedBrands.includes(t.brand))
+    }
+
+    // Filter by tyre size
+    if (selectedTyreSizes.length > 0) {
+      result = result.filter((t) => selectedTyreSizes.includes(t.size))
     }
 
     // Filter by price range
@@ -123,7 +145,7 @@ function SearchContent() {
     }
 
     return result
-  }, [tyreType, selectedBrands, selectedPriceRange, minRating, sortBy, tyres])
+  }, [tyreType, selectedBrands, selectedTyreSizes, selectedPriceRange, minRating, sortBy, tyres])
 
   // Calculate brand counts based on current filters (except brand filter)
   const brandCounts = useMemo(() => {
@@ -144,13 +166,18 @@ function SearchContent() {
       result = result.filter((t) => t.rating >= minRating)
     }
 
+    // Filter by tyre size
+    if (selectedTyreSizes.length > 0) {
+      result = result.filter((t) => selectedTyreSizes.includes(t.size))
+    }
+
     // Count brands
     const counts: Record<string, number> = {}
     result.forEach((t) => {
       counts[t.brand] = (counts[t.brand] || 0) + 1
     })
     return counts
-  }, [tyreType, selectedPriceRange, minRating, tyres])
+  }, [tyreType, selectedPriceRange, minRating, selectedTyreSizes, tyres])
 
   const vehicleString = search.vehicleType
     ? `${search.make || ""} ${search.model || ""} ${search.variant || ""}`.trim()
@@ -252,6 +279,9 @@ function SearchContent() {
               minRating={minRating}
               setMinRating={setMinRating}
               brandCounts={brandCounts}
+              availableSizes={availableSizes}
+              selectedTyreSizes={selectedTyreSizes}
+              setSelectedTyreSizes={setSelectedTyreSizes}
             />
           </div>
 
@@ -330,6 +360,9 @@ function SearchContent() {
         setMinRating={setMinRating}
         resultCount={filteredTyres.length}
         brandCounts={brandCounts}
+        availableSizes={availableSizes}
+        selectedTyreSizes={selectedTyreSizes}
+        setSelectedTyreSizes={setSelectedTyreSizes}
       />
     </div>
   )

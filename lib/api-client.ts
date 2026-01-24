@@ -9,7 +9,8 @@ interface ApiResponse<T> {
 export async function fetchWithMockFallback<T>(
     endpoint: string,
     options: RequestInit = {},
-    mockData?: T
+    mockData?: T,
+    skipDefaultHeaders = false
 ): Promise<ApiResponse<T>> {
     // If MOCK_MODE is forced or no mockData provided (shouldn't happen in this pattern but safe to handle)
     if (API_CONFIG.MOCK_MODE && mockData !== undefined) {
@@ -20,12 +21,18 @@ export async function fetchWithMockFallback<T>(
     }
 
     try {
-        const response = await fetch(`${API_CONFIG.BASE_URL}${endpoint}`, {
-            ...options,
-            headers: {
+        const url = endpoint.startsWith("http") ? endpoint : `${API_CONFIG.BASE_URL}${endpoint}`
+
+        const headers: HeadersInit = skipDefaultHeaders
+            ? { ...options.headers }
+            : {
                 "Content-Type": "application/json",
                 ...options.headers,
-            },
+            }
+
+        const response = await fetch(url, {
+            ...options,
+            headers,
         })
 
         if (!response.ok) {

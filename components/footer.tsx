@@ -9,10 +9,10 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#14B8A6] to-[#0D9488] rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">T+</span>
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden">
+                <img src="/otb-logo.png" alt="OTB" className="w-full h-full object-cover" />
               </div>
-              <span className="text-xl font-bold">TyrePlus</span>
+              <span className="text-xl font-bold">Online Tyre Bazaar</span>
             </div>
             <p className="text-[#9CA3AF] text-sm mb-4">
               Your trusted destination for quality tyres. New & used tyres for all vehicles with free installation
@@ -120,7 +120,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3 text-[#9CA3AF]">
                 <Mail className="w-4 h-4 text-[#0D9488]" />
-                <span>support@tyreplus.in</span>
+                <span>support@onlinetyrebazaar.in</span>
               </li>
               <li className="flex items-start gap-3 text-[#9CA3AF]">
                 <MapPin className="w-4 h-4 text-[#0D9488] mt-0.5" />
@@ -131,7 +131,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-[#374151] flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-[#9CA3AF] text-sm">© 2025 TyrePlus. All rights reserved.</p>
+          <p className="text-[#9CA3AF] text-sm">© 2025 Online Tyre Bazaar. All rights reserved.</p>
           <div className="flex items-center gap-6 text-sm text-[#9CA3AF]">
             <span>🔒 Secure Payments</span>
             <span>🚚 Free Installation</span>

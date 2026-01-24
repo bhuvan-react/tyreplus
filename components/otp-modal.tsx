@@ -13,9 +13,10 @@ interface OtpModalProps {
   onClose: () => void
   onSuccess: () => void
   initialPhone?: string
+  name?: string
 }
 
-export function OtpModal({ isOpen, onClose, onSuccess, initialPhone }: OtpModalProps) {
+export function OtpModal({ isOpen, onClose, onSuccess, initialPhone, name }: OtpModalProps) {
   const dispatch = useAppDispatch()
   const [step, setStep] = useState<"phone" | "otp" | "success">(initialPhone ? "otp" : "phone")
   const [phone, setPhone] = useState(initialPhone || "")
@@ -68,7 +69,7 @@ export function OtpModal({ isOpen, onClose, onSuccess, initialPhone }: OtpModalP
     // Create user and save to localStorage
     const user = {
       id: `user_${Date.now()}`,
-      name: "Guest User",
+      name: name || "Guest User",
       mobile: phone,
     }
     localStorage.setItem("tyreplus_user", JSON.stringify(user))

@@ -288,3 +288,48 @@ export const priceRanges = [
   { label: "₹4,000 - ₹5,000", min: 4000, max: 5000 },
   { label: "Above ₹5,000", min: 5000, max: Number.POSITIVE_INFINITY },
 ]
+
+// Mock mapping of Vehicle -> Tyre Sizes
+// Format: Make -> Model -> Variant -> [Sizes]
+export const vehicleTyreSizes: Record<string, Record<string, Record<string, string[]>>> = {
+  "Maruti Suzuki": {
+    "Swift": {
+      "LXI": ["165/80 R14"],
+      "VXI": ["165/80 R14", "185/65 R15"],
+      "ZXI": ["185/65 R15"],
+      "ZXI+": ["185/65 R15"],
+    },
+    "Baleno": {
+      "Sigma": ["185/65 R15"],
+      "Delta": ["185/65 R15"],
+      "Zeta": ["195/55 R16"],
+      "Alpha": ["195/55 R16"],
+    },
+  },
+  "Hyundai": {
+    "i20": {
+      "Magna": ["185/65 R15"],
+      "Sportz": ["195/55 R16"],
+      "Asta": ["195/55 R16"],
+    },
+    "Creta": {
+      "E": ["205/65 R16"],
+      "EX": ["205/65 R16"],
+      "S": ["205/65 R16"],
+      "SX": ["215/60 R17"],
+    },
+  },
+  "Honda": {
+    "City": {
+      "V": ["185/60 R15"],
+      "VX": ["185/55 R16"],
+      "ZX": ["185/55 R16"],
+    },
+  },
+}
+
+export const getAllUniqueSizes = (): string[] => {
+  const sizes = new Set<string>()
+  tyreData.forEach((t) => sizes.add(t.size))
+  return Array.from(sizes).sort()
+}

@@ -154,3 +154,27 @@ export const mockVehicles = [
         image: "/placeholder.svg?height=80&width=80" // Placeholder for now
     }
 ];
+
+// Mock Pincode Response
+export const mockPincodeResponse = [
+    {
+        Message: "Number of pincode(s) found: 1",
+        Status: "Success",
+        PostOffice: [
+            {
+                Name: "Indiranagar",
+                Description: null,
+                BranchType: "Sub Post Office",
+                DeliveryStatus: "Delivery",
+                Circle: "Karnataka",
+                District: "Bangalore",
+                Division: "Bangalore East",
+                Region: "Bangalore HQ",
+                Block: "Bangalore North",
+                State: "Karnataka",
+                Country: "India",
+                Pincode: "560038"
+            }
+        ]
+    }
+];
