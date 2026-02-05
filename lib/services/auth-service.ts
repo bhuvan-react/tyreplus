@@ -26,8 +26,7 @@ export const authService = {
                 method: "POST",
                 body: JSON.stringify({ mobile }),
             },
-            { success: true, message: "OTP sent successfully" },
-            true
+            { success: true, message: "OTP sent successfully" }
         )
     },
 
@@ -78,8 +77,7 @@ export const authService = {
                 method: "POST",
                 body: JSON.stringify({ mobile }),
             },
-            { success: true, message: "OTP sent successfully" },
-            true
+            { success: true, message: "OTP sent successfully" }
         )
     },
 

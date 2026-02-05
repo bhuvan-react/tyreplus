@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X, Phone, ArrowRight, Check } from "lucide-react"
 import { useAppDispatch } from "@/lib/hooks"
 import { setUser } from "@/lib/store"
+import { authService } from "@/lib/services/auth-service"
 
 interface OtpModalProps {
   isOpen: boolean
@@ -20,7 +21,7 @@ export function OtpModal({ isOpen, onClose, onSuccess, initialPhone, name }: Otp
   const dispatch = useAppDispatch()
   const [step, setStep] = useState<"phone" | "otp" | "success">(initialPhone ? "otp" : "phone")
   const [phone, setPhone] = useState(initialPhone || "")
-  const [otp, setOtp] = useState(["", "", "", "", "", ""])
+  const [otp, setOtp] = useState(["", "", "", ""])
   const [isLoading, setIsLoading] = useState(false)
   const [timer, setTimer] = useState(30)
   const otpRefs = useRef<(HTMLInputElement | null)[]>([])
@@ -49,7 +50,7 @@ export function OtpModal({ isOpen, onClose, onSuccess, initialPhone, name }: Otp
     newOtp[index] = value.slice(-1)
     setOtp(newOtp)
 
-    if (value && index < 5) {
+    if (value && index < 3) {
       otpRefs.current[index + 1]?.focus()
     }
   }
@@ -61,27 +62,45 @@ export function OtpModal({ isOpen, onClose, onSuccess, initialPhone, name }: Otp
   }
 
   const handleOtpSubmit = async () => {
-    if (otp.join("").length !== 6) return
+    const otpValue = otp.join("")
+    if (otpValue.length !== 4) return
     setIsLoading(true)
-    // Simulate API call
-    await new Promise((r) => setTimeout(r, 1000))
 
-    // Create user and save to localStorage
-    const user = {
-      id: `user_${Date.now()}`,
-      name: name || "Guest User",
-      mobile: phone,
+    try {
+      const response = await authService.verifyQuickOtp(phone, otpValue)
+
+      if (response.data.success) {
+        // Create user from response or fallback
+        const user = response.data.user || {
+          id: `user_${Date.now()}`,
+          name: name || "Guest User",
+          mobile: phone,
+        }
+
+        localStorage.setItem("tyreplus_user", JSON.stringify(user))
+        if (response.data.token) {
+          localStorage.setItem("tyreplus_token", response.data.token)
+        }
+        dispatch(setUser(user))
+
+        setIsLoading(false)
+        setStep("success")
+
+        setTimeout(() => {
+          onSuccess()
+          onClose()
+        }, 1500)
+      } else {
+        console.error("OTP Verification failed:", response.data.message)
+        setIsLoading(false)
+        // Ideally show an error message to user
+        alert("Invalid OTP, please try again.") // Simple alert for now, can be improved
+      }
+    } catch (error) {
+      console.error("Failed to verify OTP", error)
+      setIsLoading(false)
+      alert("Failed to verify OTP. Please try again.")
     }
-    localStorage.setItem("tyreplus_user", JSON.stringify(user))
-    dispatch(setUser(user))
-
-    setIsLoading(false)
-    setStep("success")
-
-    setTimeout(() => {
-      onSuccess()
-      onClose()
-    }, 1500)
   }
 
   const handleResendOtp = async () => {
@@ -90,7 +109,7 @@ export function OtpModal({ isOpen, onClose, onSuccess, initialPhone, name }: Otp
     await new Promise((r) => setTimeout(r, 1000))
     setIsLoading(false)
     setTimer(30)
-    setOtp(["", "", "", "", "", ""])
+    setOtp(["", "", "", ""])
     otpRefs.current[0]?.focus()
   }
 
@@ -106,7 +125,7 @@ export function OtpModal({ isOpen, onClose, onSuccess, initialPhone, name }: Otp
         setStep("phone")
         setPhone("")
       }
-      setOtp(["", "", "", "", "", ""])
+      setOtp(["", "", "", ""])
     }
   }, [isOpen, initialPhone])
 
@@ -228,8 +247,8 @@ export function OtpModal({ isOpen, onClose, onSuccess, initialPhone, name }: Otp
                     </div>
                     <button
                       onClick={handleOtpSubmit}
-                      disabled={otp.join("").length !== 6 || isLoading}
-                      className={`w-full mt-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${otp.join("").length === 6 && !isLoading
+                      disabled={otp.join("").length !== 4 || isLoading}
+                      className={`w-full mt-4 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${otp.join("").length === 4 && !isLoading
                         ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white hover:opacity-90"
                         : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed"
                         }`}

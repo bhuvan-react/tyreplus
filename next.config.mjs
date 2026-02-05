@@ -3,10 +3,15 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  images: {
-    unoptimized: true,
+  // output: 'export',
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'http://172.20.10.4:9090/api/:path*',
+      },
+    ]
   },
-  output: 'export',
 }
 
 export default nextConfig

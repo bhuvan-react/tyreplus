@@ -50,7 +50,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </StoreProvider>
-        <Analytics />
+        {/* <Analytics /> */}
       </body>
     </html>
   )

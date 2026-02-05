@@ -40,7 +40,7 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
   // Sell Flow State
   const [sellStep, setSellStep] = useState<"phone" | "otp">("phone")
   const [sellMobile, setSellMobile] = useState("")
-  const [sellOtp, setSellOtp] = useState(["", "", "", "", "", ""])
+  const [sellOtp, setSellOtp] = useState(["", "", "", ""])
   const [sellTimer, setSellTimer] = useState(0)
   const [isSellLoading, setIsSellLoading] = useState(false)
   const sellOtpRefs = useState<(HTMLInputElement | null)[]>([])[0] // minimalistic ref approach or use useRef properly if needed
@@ -81,7 +81,9 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
       const fetchMakes = async () => {
         try {
           const response = await vehicleService.getMakes(search.vehicleType!)
-          setMakes(response.data.makes || [])
+          // Handle API inconsistency: Makes are objects {makeName: string}, but Models are strings.
+          const makeData = response.data.makes || []
+          setMakes(makeData.map((m: any) => (typeof m === "object" ? m.makeName : m)))
         } catch (error) {
           console.error("Failed to fetch makes", error)
           setMakes([])
@@ -223,14 +225,29 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
     }
   }
 
-  const handleSearchClick = () => {
+  const [isAuthLoading, setIsAuthLoading] = useState(false)
+
+  const handleSearchClick = async () => {
     if (mode === "buy") {
       // If user is authenticated AND the entered mobile number matches their profile
       if (isAuthenticated && user?.mobile === mobileNumber) {
         setStep("questionnaire")
       } else {
-        // Otherwise (not auth, or changed number), verify the new number
-        setShowOtpModal(true)
+        // Trigger Send OTP API
+        setIsAuthLoading(true)
+        try {
+          const response = await authService.sendQuickOtp(mobileNumber)
+          if (response.data.success) {
+            setShowOtpModal(true)
+          } else {
+            console.error("Failed to send OTP:", response.data.message)
+            // Optional: Show error toast
+          }
+        } catch (error) {
+          console.error("Error sending OTP:", error)
+        } finally {
+          setIsAuthLoading(false)
+        }
       }
     } else {
       // For sell mode, maybe just redirect or show a message
@@ -276,7 +293,7 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
     newOtp[index] = value.slice(-1)
     setSellOtp(newOtp)
 
-    if (value && index < 5) {
+    if (value && index < 3) {
       const nextInput = document.getElementById(`sell-otp-${index + 1}`)
       if (nextInput) nextInput.focus()
     }
@@ -299,7 +316,7 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
 
   const handleSellOtpSubmit = async () => {
     const otpValue = sellOtp.join("")
-    if (otpValue.length !== 6) return
+    if (otpValue.length !== 4) return
 
     // Prevent double submission if already loading
     if (isSellLoading) return
@@ -339,7 +356,7 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
       await authService.sendQuickOtp(sellMobile)
       setIsSellLoading(false)
       setSellTimer(30)
-      setSellOtp(["", "", "", "", "", ""])
+      setSellOtp(["", "", "", ""])
       const firstInput = document.getElementById("sell-otp-0")
       if (firstInput) firstInput.focus()
     } catch (error) {
@@ -598,6 +615,18 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
                           </AnimatePresence>
                         </div>
                       )}
+                      {(
+                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
+                          <label className="block text-sm font-medium text-[#6B7280] mb-2">Full Name 👤</label>
+                          <input
+                            type="text"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            placeholder="Enter your full name"
+                            className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:border-transparent transition-all"
+                          />
+                        </motion.div>
+                      )}
 
                       {/* Make Dropdown */}
                       <div className="relative">
@@ -793,18 +822,6 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
                       )}
 
                       {/* Name Input */}
-                      {search.tyreSize && (
-                        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-                          <label className="block text-sm font-medium text-[#6B7280] mb-2">Full Name 👤</label>
-                          <input
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="Enter your full name"
-                            className="w-full px-4 py-3 border border-[#D1D5DB] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:border-transparent transition-all"
-                          />
-                        </motion.div>
-                      )}
 
                       {/* Mobile Number Input */}
                       {search.tyreSize && name.trim().length >= 2 && (
@@ -828,16 +845,22 @@ export function VehicleSelector({ onSearch }: VehicleSelectorProps) {
 
                 {/* Search Button */}
                 <motion.button
-                  whileHover={isSearchEnabled ? { scale: 1.02 } : {}}
-                  whileTap={isSearchEnabled ? { scale: 0.98 } : {}}
+                  whileHover={isSearchEnabled && !isAuthLoading ? { scale: 1.02 } : {}}
+                  whileTap={isSearchEnabled && !isAuthLoading ? { scale: 0.98 } : {}}
                   onClick={handleSearchClick}
-                  disabled={!isSearchEnabled}
-                  className={`w-full mt-6 py-4 rounded-xl font-bold text-lg transition-all ${isSearchEnabled
+                  disabled={!isSearchEnabled || isAuthLoading}
+                  className={`w-full mt-6 py-4 rounded-xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${isSearchEnabled && !isAuthLoading
                     ? "bg-gradient-to-r from-[#14B8A6] to-[#0D9488] text-white hover:opacity-90 shadow-lg shadow-teal-500/30"
                     : "bg-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed"
                     }`}
                 >
-                  {mode === "buy" ? "Next ➡️" : "Sell Now"}
+                  {isAuthLoading ? (
+                    <Loader2 className="w-6 h-6 animate-spin" />
+                  ) : mode === "buy" ? (
+                    "Next ➡️"
+                  ) : (
+                    "Sell Now"
+                  )}
                 </motion.button>
               </>
             )}

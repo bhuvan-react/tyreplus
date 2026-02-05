@@ -1,6 +1,7 @@
 export const API_CONFIG = {
-    BASE_URL: process.env.NEXT_PUBLIC_API_URL || "http://192.0.0.2:9090/api",
-    MOCK_MODE: process.env.NEXT_PUBLIC_MOCK_MODE === "true" || false,
+    // Proxy is enabled now, so we always hit /api
+    BASE_URL: process.env.NEXT_PUBLIC_API_URL || "/api",
+    MOCK_MODE: false,
     ENDPOINTS: {
         AUTH: {
             QUICK: {

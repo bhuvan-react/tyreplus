@@ -64,16 +64,15 @@ export default function HomePage() {
                 <span className="inline-block px-4 py-2 bg-[#F0FDFA] text-[#0D9488] rounded-full text-base lg:text-lg font-semibold mb-4 lg:mb-6">
                   🚗 India's #1 Tyre Marketplace
                 </span>
-                <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-[#1F2937] leading-tight mb-6">
-                  Perfect Tyres for <span className="text-[#0D9488]">Every Vehicle</span>
+                <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold text-[#1F2937] leading-tight mb-6">
+                  Buy Car & Bike Tyres <span className="text-[#0D9488]">Online in India</span>
                 </h1>
               </div>
 
               {/* Desktop Only: Description, Pills, and Stats */}
               <div className="hidden lg:block">
-                <p className="text-lg text-[#6B7280] mb-8 max-w-lg">
-                  Discover the perfect tyres for your 2-wheeler, 3-wheeler, or 4-wheeler. Quality assured with free
-                  installation across India.
+                <p className="text-md text-[#6B7280] mb-8 max-w-lg">
+                  Welcome to Online Tyre Bazaar, your one-stop destination to buy tyres online at the best prices in India. We offer a wide range of car tyres, bike tyres, SUV tyres, and commercial vehicle tyres from top brands, delivered safely to your doorstep or fitted at a nearby partner store.
                 </p>
 
                 {/* Feature Pills */}
@@ -138,10 +137,18 @@ export default function HomePage() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-[#1F2937] mb-4">Why Choose Online Tyre Bazaar?</h2>
-            <p className="text-[#6B7280] max-w-2xl mx-auto">
+            {/* <p className="text-[#6B7280] max-w-2xl mx-auto">
               We're committed to providing the best tyre shopping experience with quality products and exceptional
               service.
-            </p>
+            </p> */}
+            <ul>
+              <li>Best Tyre Prices Online</li>
+              <li>Genuine & Brand-New Tyres</li>
+              <li>Easy Tyre Comparison by size, brand & price</li>
+              <li>Doorstep Delivery & Nearby Installation</li>
+              <li>Secure Online Payment Options</li>
+              <li>Expert Tyre Buying Guidance</li>
+            </ul>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">

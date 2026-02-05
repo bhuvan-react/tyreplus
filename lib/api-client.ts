@@ -30,6 +30,14 @@ export async function fetchWithMockFallback<T>(
                 ...options.headers,
             }
 
+        // Add Authorization token if available
+        if (typeof window !== "undefined") {
+            const token = localStorage.getItem("tyreplus_token")
+            if (token) {
+                (headers as any)["Authorization"] = `Bearer ${token}`
+            }
+        }
+
         const response = await fetch(url, {
             ...options,
             headers,
