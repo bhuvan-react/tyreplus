@@ -50,24 +50,7 @@ export const authService = {
     },
 
     // Full Login
-    login: async (mobile: string, password: string) => {
-        // Mock user for fallback
-        const mockUser = {
-            id: "user_mock_login",
-            name: "John Doe",
-            mobile: mobile,
-            role: "customer"
-        }
 
-        return fetchWithMockFallback<LoginResponse>(
-            API_CONFIG.ENDPOINTS.AUTH.LOGIN,
-            {
-                method: "POST",
-                body: JSON.stringify({ mobile, password }),
-            },
-            { success: true, token: "mock_jwt_token", user: mockUser }
-        )
-    },
 
     // Registration
     sendRegisterOtp: async (mobile: string) => {

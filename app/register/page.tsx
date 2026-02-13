@@ -8,7 +8,7 @@ import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAppDispatch } from "@/lib/hooks"
 import { setUser } from "@/lib/store"
-import { Eye, EyeOff, User, Phone, Lock, MapPin, ArrowRight, Check, AlertCircle } from "lucide-react"
+import { User, Phone, MapPin, ArrowRight, Check, AlertCircle } from "lucide-react"
 import { useGoogleLogin } from "@react-oauth/google"
 import { fetchLocationDetails } from "@/lib/geocode"
 import { authService } from "@/lib/services/auth-service"
@@ -20,11 +20,7 @@ export default function RegisterPage() {
   const [step, setStep] = useState<"details" | "otp" | "success">("details")
   const [name, setName] = useState("")
   const [mobile, setMobile] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
   const [pincode, setPincode] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isGoogleAuth, setIsGoogleAuth] = useState(false)
@@ -105,21 +101,6 @@ export default function RegisterPage() {
     }
   }, [])
 
-  // Password strength calculation
-  const getPasswordStrength = (pwd: string) => {
-    let strength = 0
-    if (pwd.length >= 6) strength++
-    if (pwd.length >= 8) strength++
-    if (/[A-Z]/.test(pwd)) strength++
-    if (/[0-9]/.test(pwd)) strength++
-    if (/[^A-Za-z0-9]/.test(pwd)) strength++
-    return strength
-  }
-
-  const passwordStrength = getPasswordStrength(password)
-  const strengthLabels = ["Very Weak", "Weak", "Fair", "Good", "Strong"]
-  const strengthColors = ["#0D9488", "#F59E0B", "#F59E0B", "#10B981", "#10B981"]
-
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
@@ -128,14 +109,6 @@ export default function RegisterPage() {
     }
     if (mobile.length !== 10) {
       newErrors.mobile = "Enter a valid 10-digit mobile number"
-    }
-    if (!isGoogleAuth) {
-      if (password.length < 6) {
-        newErrors.password = "Password must be at least 6 characters"
-      }
-      if (password !== confirmPassword) {
-        newErrors.confirmPassword = "Passwords do not match"
-      }
     }
     if (pincode.length !== 6) {
       newErrors.pincode = "Enter a valid 6-digit pincode"
@@ -190,7 +163,6 @@ export default function RegisterPage() {
       const registrationData = {
         name,
         mobile,
-        password, // Ideally hashed, but sending raw as per typical initial setup or over HTTPS
         pincode,
         city,
         state,
@@ -420,88 +392,6 @@ export default function RegisterPage() {
                     </p>
                   )}
                 </div>
-
-                {/* Password */}
-                {!isGoogleAuth && (
-                  <>
-                    <div>
-                      <label className="block text-sm font-medium text-[#1F2937] mb-2">Password</label>
-                      <div className="relative">
-                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          placeholder="Create password"
-                          className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:border-transparent transition-all ${errors.password ? "border-[#0D9488]" : "border-[#D1D5DB]"
-                            }`}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#6B7280]"
-                        >
-                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                        </button>
-                      </div>
-                      {/* Password Strength Meter */}
-                      {password && (
-                        <div className="mt-2">
-                          <div className="flex gap-1 mb-1">
-                            {[1, 2, 3, 4, 5].map((level) => (
-                              <div
-                                key={level}
-                                className={`h-1.5 flex-1 rounded-full transition-all ${level <= passwordStrength ? "" : "bg-[#E5E7EB]"
-                                  }`}
-                                style={{
-                                  backgroundColor: level <= passwordStrength ? strengthColors[passwordStrength - 1] : "",
-                                }}
-                              />
-                            ))}
-                          </div>
-                          <p className="text-xs" style={{ color: strengthColors[passwordStrength - 1] || "#9CA3AF" }}>
-                            {passwordStrength > 0 ? strengthLabels[passwordStrength - 1] : "Enter a password"}
-                          </p>
-                        </div>
-                      )}
-                      {errors.password && (
-                        <p className="text-sm text-[#0D9488] mt-1 flex items-center gap-1">
-                          <AlertCircle className="w-4 h-4" />
-                          {errors.password}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Confirm Password */}
-                    <div>
-                      <label className="block text-sm font-medium text-[#1F2937] mb-2">Confirm Password</label>
-                      <div className="relative">
-                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9CA3AF]" />
-                        <input
-                          type={showConfirmPassword ? "text" : "password"}
-                          value={confirmPassword}
-                          onChange={(e) => setConfirmPassword(e.target.value)}
-                          placeholder="Confirm password"
-                          className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0D9488] focus:border-transparent transition-all ${errors.confirmPassword ? "border-[#0D9488]" : "border-[#D1D5DB]"
-                            }`}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9CA3AF] hover:text-[#6B7280]"
-                        >
-                          {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                        </button>
-                      </div>
-                      {errors.confirmPassword && (
-                        <p className="text-sm text-[#0D9488] mt-1 flex items-center gap-1">
-                          <AlertCircle className="w-4 h-4" />
-                          {errors.confirmPassword}
-                        </p>
-                      )}
-                    </div>
-                  </>
-                )}
 
                 {/* Pincode */}
                 <div>

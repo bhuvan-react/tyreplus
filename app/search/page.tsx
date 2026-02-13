@@ -53,7 +53,12 @@ function SearchContent() {
     const fetchTyres = async () => {
       setIsLoading(true)
       try {
-        const response = await tyreService.getAllTyres()
+        const filters = {
+          size: search.tyreSize || undefined,
+          brand: selectedBrands.length > 0 ? selectedBrands[0] : undefined,
+          categoryId: searchParams.get("categoryId") || undefined,
+        }
+        const response = await tyreService.getAllTyres(filters)
         setTyres(response.data)
       } catch (error) {
         console.error("Failed to fetch tyres:", error)
@@ -62,7 +67,7 @@ function SearchContent() {
       }
     }
     fetchTyres()
-  }, [])
+  }, [search.make, search.model, search.variant, search.tyreSize, search.vehicleType, selectedBrands])
 
   // Handle query params
   useEffect(() => {

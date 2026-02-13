@@ -6,22 +6,22 @@ const categories = [
     {
         id: "car-tyres",
         title: "Car Tyres",
-        link: "/search?vehicleType=4W",
+        link: "/search?vehicleType=4W&categoryId=car-tyres",
     },
     {
         id: "bike-scooter-tyres",
         title: "Bike / Scooter Tyres",
-        link: "/search?vehicleType=2W",
+        link: "/search?vehicleType=2W&categoryId=bike-scooter-tyres",
     },
     {
         id: "auto-tyres",
         title: "Auto Tyres",
-        link: "/search?vehicleType=3W",
+        link: "/search?vehicleType=3W&categoryId=auto-tyres",
     },
     {
         id: "alloy-wheels",
         title: "Alloy Wheels",
-        link: "/search?category=alloy-wheels",
+        link: "/search?category=alloy-wheels&categoryId=alloy-wheels",
     },
 ]
 

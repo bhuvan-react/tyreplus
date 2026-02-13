@@ -4,7 +4,7 @@ This document outlines the API endpoints required for the TyrePlus application, 
 
 ## Base Configuration
 
-*   **Base URL**: `/api` (or a configured production URL)
+*   **Base URL**: `http://43.205.253.34:8081/api/v1`
 *   **Authentication**: Bearer Token in `Authorization` header (`Authorization: Bearer <token>`)
 *   **Content-Type**: `application/json`
 
@@ -81,10 +81,7 @@ Used in: `OtpModal`, vehicle selector flows.
     ```
 *   **Response**: Same as Quick Login Verify (Token + User).
 
-### 1.3 Full Login (Password)
-*   **Endpoint**: `POST /auth/login`
-*   **Request**: `{"mobile": "...", "password": "..."}`
-*   **Response**: Token + User object.
+
 
 ---
 
@@ -142,10 +139,10 @@ Used in: `OtpModal`, vehicle selector flows.
 ### 3.1 Get All / Search Tyres (Function: `getAllTyres`)
 **Flow**: User searches for tyres by size or filters.
 *   **Endpoint**: `GET /tyres`
-*   **Query Params**:
     *   `size`: "165/80 R14"
     *   `brand`: "Michelin"
-    *   `vehicleType`: "4W"
+    *   `pattern`: "Primacy 4ST"
+    *   `categoryId`: "alloy-wheels"
 *   **Response**: List of `Tyre` objects.
     ```json
     [

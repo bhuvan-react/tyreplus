@@ -1,6 +1,6 @@
 export const API_CONFIG = {
-    // Proxy is enabled now, so we always hit /api
-    BASE_URL: process.env.NEXT_PUBLIC_API_URL || "/api",
+    // Direct API call
+    BASE_URL: process.env.NEXT_PUBLIC_API_URL || "http://43.205.253.34:8081/api/v1",
     MOCK_MODE: false,
     ENDPOINTS: {
         AUTH: {
@@ -8,7 +8,7 @@ export const API_CONFIG = {
                 SEND_OTP: "/auth/quick/send-otp",
                 VERIFY_OTP: "/auth/quick/verify-otp",
             },
-            LOGIN: "/auth/login",
+
             REGISTER: {
                 SEND_OTP: "/auth/register/send-otp",
                 COMPLETE: "/auth/register/complete",
