@@ -135,23 +135,23 @@ export const mockRequests = [
 export const mockVehicles = [
     {
         id: "VEH-001",
-        name: "Maruti Swift VXi",
-        registration: "MH 02 AB 1234",
-        year: 2020,
+        vehicleName: "Maruti Swift VXi",
+        make: "Maruti",
+        model: "Swift",
+        variant: "VXi",
+        registrationNumber: "MH 02 AB 1234",
         tyreSize: "185/65 R15",
-        lastService: "Dec 4, 2025",
         isPrimary: true,
-        image: "/placeholder.svg?height=80&width=80" // Placeholder for now
     },
     {
         id: "VEH-002",
-        name: "Honda City ZX",
-        registration: "MH 12 CD 5678",
-        year: 2018,
+        vehicleName: "Honda City ZX",
+        make: "Honda",
+        model: "City",
+        variant: "ZX",
+        registrationNumber: "MH 12 CD 5678",
         tyreSize: "175/65 R14",
-        lastService: "Nov 20, 2025",
         isPrimary: false,
-        image: "/placeholder.svg?height=80&width=80" // Placeholder for now
     }
 ];
 

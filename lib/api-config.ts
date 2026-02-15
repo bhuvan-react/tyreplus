@@ -1,6 +1,6 @@
 export const API_CONFIG = {
     // Direct API call
-    BASE_URL: process.env.NEXT_PUBLIC_API_URL || "http://43.205.253.34:8081/api/v1",
+    BASE_URL: process.env.NEXT_PUBLIC_API_URL || "/api/v1",
     MOCK_MODE: false,
     ENDPOINTS: {
         AUTH: {
@@ -20,7 +20,7 @@ export const API_CONFIG = {
             },
         },
         USER: {
-            PROFILE: "/user/profile",
+            PROFILE: "/dealer/profile",
         },
         VEHICLES: {
             MAKES: "/vehicles/makes",
@@ -32,7 +32,13 @@ export const API_CONFIG = {
             DELETE: (id: string) => `/vehicles/${id}`,
         },
         LOCATION: {
-            CHECK_PINCODE: "/location/check-pincode",
+            CHECK_PINCODE: "/locations/check",
+        },
+        WALLET: {
+            GET_BALANCE: "/dealer/wallet",
+            GET_PACKAGES: "/dealer/packages",
+            INITIATE_RECHARGE: "/dealer/recharge/initiate",
+            VERIFY_PAYMENT: "/dealer/recharge/verify",
         },
         SELL_TYRES: {
             SUBMIT: "/sell-tyres/submit",
@@ -44,9 +50,18 @@ export const API_CONFIG = {
         ORDERS: {
             GET_ALL: "/orders",
             GET_BY_ID: (id: string) => `/orders/${id}`,
+            CREATE: "/orders",
         },
         REQUESTS: {
-            GET_ALL: "/requests",
+            GET_ALL: "/orders/requests",
+            CREATE: "/orders/requests",
+        },
+        LEADS: {
+            GET_ALL: "/leads",
+            GET_BY_ID: (id: string) => `/leads/${id}`,
+            BUY: (id: string) => `/leads/${id}/buy`,
+            SKIP: (id: string) => `/leads/${id}/skip`,
+            UPDATE_STATUS: (id: string) => `/leads/${id}/status`,
         },
     },
 }

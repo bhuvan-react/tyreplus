@@ -49,7 +49,7 @@ export function OrderCard({ order }: OrderCardProps) {
                     <span className="text-xs text-muted-foreground">Placed on {order.date}</span>
                 </div>
                 <div className="flex items-center gap-4">
-                    <span className="font-bold">₹{order.total.toLocaleString()}</span>
+                    <span className="font-bold">₹{(order.totalAmount || order.total || 0).toLocaleString()}</span>
                     <Badge className={getStatusColor(order.status)}>
                         {getStatusIcon(order.status)}
                         <span className="capitalize">{order.status}</span>
@@ -63,18 +63,18 @@ export function OrderCard({ order }: OrderCardProps) {
                             <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-md border bg-muted">
                                 <Image
                                     src={item.image || "/placeholder.svg"}
-                                    alt={item.name}
+                                    alt={item.tyreName || "Tyre"}
                                     fill
                                     className="object-cover"
                                 />
                             </div>
                             <div className="flex flex-1 flex-col justify-center">
-                                <h4 className="font-medium">{item.name}</h4>
+                                <h4 className="font-medium">{item.tyreName}</h4>
                                 {item.variant && <p className="text-sm text-muted-foreground">{item.variant}</p>}
                                 <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                             </div>
                             <div className="flex flex-col justify-center items-end">
-                                <span className="font-medium">₹{item.price.toLocaleString()}</span>
+                                <span className="font-medium">₹{(item.unitPrice || 0).toLocaleString()}</span>
                             </div>
                         </div>
                     ))}
@@ -83,7 +83,13 @@ export function OrderCard({ order }: OrderCardProps) {
             <Separator />
             <CardFooter className="p-4 bg-muted/20 flex justify-between items-center">
                 <div className="text-sm text-muted-foreground">
-                    <span className="font-medium text-foreground">Ship to:</span> {order.shippingAddress.name}
+                    {order.shippingAddress ? (
+                        <>
+                            <span className="font-medium text-foreground">Ship to:</span> {order.shippingAddress.name}
+                        </>
+                    ) : (
+                        <span className="italic">No shipping address provided</span>
+                    )}
                 </div>
                 {/* <Button variant="outline" size="sm" className="gap-1">
                     View Details <ChevronRight className="h-4 w-4" />

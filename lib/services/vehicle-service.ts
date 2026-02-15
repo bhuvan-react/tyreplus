@@ -4,13 +4,14 @@ import { mockVehicles } from "../mock-data"
 
 export interface Vehicle {
     id: string
-    name: string
-    registration: string
-    year: number
+    vehicleName: string
+    registrationNumber: string
     tyreSize: string
-    lastService: string
     isPrimary: boolean
-    image: string
+    make?: string
+    model?: string
+    variant?: string
+    // Removed fields not in backend: year, lastService, image
 }
 
 export const vehicleService = {

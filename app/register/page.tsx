@@ -27,7 +27,7 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<Record<string, string>>({})
 
   // OTP
-  const [otp, setOtp] = useState(["", "", "", "", "", ""])
+  const [otp, setOtp] = useState(["", "", "", ""])
   const [timer, setTimer] = useState(30)
   const otpRefs = useRef<(HTMLInputElement | null)[]>([])
 
@@ -156,7 +156,7 @@ export default function RegisterPage() {
 
   const handleVerifyOtp = async () => {
     const otpValue = otp.join("")
-    if (otpValue.length !== 6) return
+    if (otpValue.length !== 4) return
     setIsLoading(true)
 
     try {
@@ -173,12 +173,17 @@ export default function RegisterPage() {
 
       const response = await authService.completeRegistration(registrationData)
 
-      if (response.data.success) {
-        localStorage.setItem("tyreplus_user", JSON.stringify(response.data.user))
-        if (response.data.token) {
-          localStorage.setItem("auth_token", response.data.token)
+      // Check for token as success indicator
+      if (response.data.token) {
+        // Backend UserInfo doesn't have mobile, inject it from state
+        const user = {
+          ...response.data.user,
+          mobile: mobile
         }
-        dispatch(setUser(response.data.user))
+
+        localStorage.setItem("tyreplus_user", JSON.stringify(user))
+        localStorage.setItem("auth_token", response.data.token)
+        dispatch(setUser(user))
 
         setIsLoading(false)
         setStep("success")
@@ -187,8 +192,7 @@ export default function RegisterPage() {
           router.push("/")
         }, 2000)
       } else {
-        console.error("Registration failed:", response.data.error)
-        // Ideally show error message to user
+        console.error("Registration failed:", response.data)
         setIsLoading(false)
       }
     } catch (error) {

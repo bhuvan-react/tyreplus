@@ -29,15 +29,15 @@ export function AddVehicleModal({ isOpen, onClose, onAdd, onEdit, initialData }:
 
             // Parse name to get make, model, variant if possible, or just set defaults if structure varies
             // Assuming name format "Make Model Variant"
-            const nameParts = initialData.name.split(" ")
-            if (nameParts.length >= 1) setMake(nameParts[0])
-            if (nameParts.length >= 2) setModel(nameParts[1])
-            if (nameParts.length >= 3) setVariant(nameParts.slice(2).join(" "))
+            setMake(initialData.make || "")
+            setModel(initialData.model || "")
+            setVariant(initialData.variant || "")
+            setVehicleType("4w") // Default to 4w as type isn't in backend DTO
 
-            setYear(initialData.year.toString())
-            setRegistration(initialData.registration)
-            setTyreSize(initialData.tyreSize)
-            setIsPrimary(initialData.isPrimary)
+            setYear(new Date().getFullYear().toString()) // Default year as not in DTO
+            setRegistration(initialData.registrationNumber || "")
+            setTyreSize(initialData.tyreSize || "")
+            setIsPrimary(initialData.isPrimary || false)
         } else if (isOpen) {
             resetForm()
         }
@@ -66,17 +66,14 @@ export function AddVehicleModal({ isOpen, onClose, onAdd, onEdit, initialData }:
         e.preventDefault()
         const newVehicle = {
             id: initialData ? initialData.id : `VEH-${Date.now()}`,
-            name: `${make} ${model} ${variant}`,
+            vehicleName: `${year} ${make} ${model} ${variant}`, // Store year in name as it's not in DB
             make,
             model,
             variant,
-            registration,
-            year: parseInt(year),
+            registrationNumber: registration,
             tyreSize,
-            lastService: initialData ? initialData.lastService : "Just Added",
             isPrimary,
-            type: vehicleType, // Add type to vehicle object
-            image: "/placeholder.svg?height=80&width=80",
+            // type: vehicleType, // Not in DTO but useful for UI locally if persisted in name or ignored
         }
 
         if (initialData && onEdit) {

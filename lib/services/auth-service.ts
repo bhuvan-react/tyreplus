@@ -2,19 +2,23 @@ import { fetchWithMockFallback } from "../api-client"
 import { API_CONFIG } from "../api-config"
 
 // Define types for Auth API
+// Define types for Auth API based on Backend DTOs
+interface UserInfo {
+    id: string
+    name: string
+    role: string
+    avatar?: string
+}
+
 interface LoginResponse {
-    success: boolean
-    token?: string
-    user?: any
-    error?: string
+    token: string
+    refreshToken: string
+    user: UserInfo
 }
 
 interface OtpResponse {
-    success: boolean
     message: string
-    token?: string
-    user?: any
-    error?: string
+    otp?: string // Included in backend response for debug/dev
 }
 
 export const authService = {
@@ -26,26 +30,25 @@ export const authService = {
                 method: "POST",
                 body: JSON.stringify({ mobile }),
             },
-            { success: true, message: "OTP sent successfully" }
+            { message: "OTP sent successfully" }
         )
     },
 
     verifyQuickOtp: async (mobile: string, otp: string) => {
         // Mock user for fallback
-        const mockUser = {
+        const mockUser: UserInfo = {
             id: "user_mock_123",
             name: "Guest User",
-            mobile: mobile,
             role: "customer"
         }
 
-        return fetchWithMockFallback<OtpResponse>(
+        return fetchWithMockFallback<LoginResponse>(
             API_CONFIG.ENDPOINTS.AUTH.QUICK.VERIFY_OTP,
             {
                 method: "POST",
                 body: JSON.stringify({ mobile, otp }),
             },
-            { success: true, message: "OTP verified", token: "mock_token_123", user: mockUser }
+            { token: "mock_token_123", refreshToken: "mock_refresh_123", user: mockUser }
         )
     },
 
@@ -60,18 +63,15 @@ export const authService = {
                 method: "POST",
                 body: JSON.stringify({ mobile }),
             },
-            { success: true, message: "OTP sent successfully" }
+            { message: "OTP sent successfully" }
         )
     },
 
     completeRegistration: async (data: any) => {
-        const mockUser = {
+        const mockUser: UserInfo = {
             id: `user_${Date.now()}`,
-            name: data.name,
-            mobile: data.mobile,
-            pincode: data.pincode,
-            city: data.city,
-            state: data.state
+            name: data.name || "New User",
+            role: "dealer"
         }
 
         return fetchWithMockFallback<LoginResponse>(
@@ -80,7 +80,7 @@ export const authService = {
                 method: "POST",
                 body: JSON.stringify(data),
             },
-            { success: true, token: "mock_reg_token", user: mockUser }
+            { token: "mock_reg_token", refreshToken: "mock_refresh_reg", user: mockUser }
         )
     },
 }

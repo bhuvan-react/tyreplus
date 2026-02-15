@@ -6,7 +6,6 @@ export interface TyreFilters {
     size?: string
     brand?: string
     pattern?: string
-    categoryId?: string
 }
 
 export const tyreService = {
@@ -18,7 +17,6 @@ export const tyreService = {
             if (filters.size) queryParams.append("size", filters.size)
             if (filters.brand) queryParams.append("brand", filters.brand)
             if (filters.pattern) queryParams.append("pattern", filters.pattern)
-            if (filters.categoryId) queryParams.append("categoryId", filters.categoryId)
 
             const queryString = queryParams.toString()
             if (queryString) {

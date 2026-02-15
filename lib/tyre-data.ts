@@ -2,28 +2,32 @@
 export interface Tyre {
   id: string
   brand: string
-  model: string
+  pattern: string // Renamed from model to match backend
   size: string
-  type: "new" | "used"
   price: number
+  imageUrl: string // Renamed from image to match backend
+  features: string[]
+  // Optional/UI specific fields (some missing in backend)
+  type?: "new" | "used"
   newPrice?: number
   usedPrice?: number
   originalPrice?: number
-  rating: number
-  reviewCount: number
+  rating?: number
+  reviewCount?: number
   condition?: string
   treadDepth?: number
-  image: string
-  features: string[]
-  freeInstallation: boolean
-  inStock: boolean
+  freeInstallation?: boolean
+  inStock?: boolean
+  // Backend fields
+  productCode?: string
+  warrantyYears?: number
 }
 
 export const tyreData: Tyre[] = [
   {
     id: "1",
     brand: "MRF",
-    model: "ZVTV",
+    pattern: "ZVTV",
     size: "185/65 R15",
     type: "new",
     price: 4599,
@@ -32,7 +36,7 @@ export const tyreData: Tyre[] = [
     originalPrice: 5499,
     rating: 4.5,
     reviewCount: 234,
-    image: "/mrf-car-tyre.jpg",
+    imageUrl: "/mrf-car-tyre.jpg",
     features: ["All Season", "Tubeless", "Warranty 5 Years"],
     freeInstallation: true,
     inStock: true,
@@ -40,7 +44,7 @@ export const tyreData: Tyre[] = [
   {
     id: "2",
     brand: "Apollo",
-    model: "Amazer 4G Life",
+    pattern: "Amazer 4G Life",
     size: "185/65 R15",
     type: "new",
     price: 4299,
@@ -48,7 +52,7 @@ export const tyreData: Tyre[] = [
     originalPrice: 4999,
     rating: 4.3,
     reviewCount: 187,
-    image: "/apollo-car-tyre.jpg",
+    imageUrl: "/apollo-car-tyre.jpg",
     features: ["Long Life", "Fuel Efficient", "Warranty 4 Years"],
     freeInstallation: true,
     inStock: true,
@@ -56,7 +60,7 @@ export const tyreData: Tyre[] = [
   {
     id: "3",
     brand: "CEAT",
-    model: "SecuraDrive",
+    pattern: "SecuraDrive",
     size: "185/65 R15",
     type: "new",
     price: 3999,
@@ -65,7 +69,7 @@ export const tyreData: Tyre[] = [
     originalPrice: 4799,
     rating: 4.2,
     reviewCount: 156,
-    image: "/ceat-car-tyre.jpg",
+    imageUrl: "/ceat-car-tyre.jpg",
     features: ["Wet Grip", "Silent", "Warranty 4 Years"],
     freeInstallation: true,
     inStock: true,
@@ -73,7 +77,7 @@ export const tyreData: Tyre[] = [
   {
     id: "4",
     brand: "Bridgestone",
-    model: "Ecopia EP150",
+    pattern: "Ecopia EP150",
     size: "185/65 R15",
     type: "new",
     price: 5299,
@@ -82,7 +86,7 @@ export const tyreData: Tyre[] = [
     originalPrice: 6299,
     rating: 4.7,
     reviewCount: 312,
-    image: "/bridgestone-car-tyre.jpg",
+    imageUrl: "/bridgestone-car-tyre.jpg",
     features: ["Eco Friendly", "Low Rolling Resistance", "Warranty 6 Years"],
     freeInstallation: true,
     inStock: true,
@@ -90,7 +94,7 @@ export const tyreData: Tyre[] = [
   {
     id: "5",
     brand: "MRF",
-    model: "ZLX",
+    pattern: "ZLX",
     size: "185/65 R15",
     type: "used",
     price: 1899,
@@ -100,7 +104,7 @@ export const tyreData: Tyre[] = [
     reviewCount: 89,
     condition: "Good",
     treadDepth: 6,
-    image: "/used-mrf-tyre.jpg",
+    imageUrl: "/used-mrf-tyre.jpg",
     features: ["70% Tread Left", "No Repairs", "30 Day Warranty"],
     freeInstallation: true,
     inStock: true,
@@ -108,7 +112,7 @@ export const tyreData: Tyre[] = [
   {
     id: "6",
     brand: "Apollo",
-    model: "Alnac 4G",
+    pattern: "Alnac 4G",
     size: "185/65 R15",
     type: "used",
     price: 1599,
@@ -118,7 +122,7 @@ export const tyreData: Tyre[] = [
     reviewCount: 67,
     condition: "Very Good",
     treadDepth: 7,
-    image: "/used-apollo-tyre.jpg",
+    imageUrl: "/used-apollo-tyre.jpg",
     features: ["80% Tread Left", "No Punctures", "30 Day Warranty"],
     freeInstallation: true,
     inStock: true,
@@ -126,7 +130,7 @@ export const tyreData: Tyre[] = [
   {
     id: "7",
     brand: "Yokohama",
-    model: "Earth-1",
+    pattern: "Earth-1",
     size: "185/65 R15",
     type: "new",
     price: 4899,
@@ -135,7 +139,7 @@ export const tyreData: Tyre[] = [
     originalPrice: 5799,
     rating: 4.4,
     reviewCount: 145,
-    image: "/yokohama-car-tyre.jpg",
+    imageUrl: "/yokohama-car-tyre.jpg",
     features: ["Japanese Quality", "Superior Grip", "Warranty 5 Years"],
     freeInstallation: true,
     inStock: true,
@@ -143,7 +147,7 @@ export const tyreData: Tyre[] = [
   {
     id: "8",
     brand: "Goodyear",
-    model: "Assurance",
+    pattern: "Assurance",
     size: "185/65 R15",
     type: "new",
     price: 4499,
@@ -152,7 +156,7 @@ export const tyreData: Tyre[] = [
     originalPrice: 5299,
     rating: 4.6,
     reviewCount: 278,
-    image: "/goodyear-car-tyre.jpg",
+    imageUrl: "/goodyear-car-tyre.jpg",
     features: ["Premium Quality", "All Weather", "Warranty 5 Years"],
     freeInstallation: true,
     inStock: true,
@@ -160,7 +164,7 @@ export const tyreData: Tyre[] = [
   {
     id: "9",
     brand: "CEAT",
-    model: "Milaze",
+    pattern: "Milaze",
     size: "185/65 R15",
     type: "used",
     price: 1299,
@@ -170,7 +174,7 @@ export const tyreData: Tyre[] = [
     reviewCount: 45,
     condition: "Good",
     treadDepth: 5,
-    image: "/used-ceat-tyre.jpg",
+    imageUrl: "/used-ceat-tyre.jpg",
     features: ["60% Tread Left", "Minor Wear", "15 Day Warranty"],
     freeInstallation: true,
     inStock: false,
@@ -178,7 +182,7 @@ export const tyreData: Tyre[] = [
   {
     id: "10",
     brand: "JK Tyre",
-    model: "UX Royale",
+    pattern: "UX Royale",
     size: "185/65 R15",
     type: "new",
     price: 3799,
@@ -187,7 +191,7 @@ export const tyreData: Tyre[] = [
     originalPrice: 4499,
     rating: 4.1,
     reviewCount: 123,
-    image: "/jk-tyre-car-tyre.jpg",
+    imageUrl: "/jk-tyre-car-tyre.jpg",
     features: ["Made in India", "Value for Money", "Warranty 4 Years"],
     freeInstallation: true,
     inStock: true,
@@ -196,7 +200,7 @@ export const tyreData: Tyre[] = [
   {
     id: "11",
     brand: "MRF",
-    model: "ZVTV",
+    pattern: "ZVTV",
     size: "185/65 R15",
     type: "new",
     price: 4599,
@@ -205,7 +209,7 @@ export const tyreData: Tyre[] = [
     originalPrice: 5499,
     rating: 4.5,
     reviewCount: 234,
-    image: "/mrf-car-tyre.jpg",
+    imageUrl: "/mrf-car-tyre.jpg",
     features: ["All Season", "Tubeless", "Warranty 5 Years"],
     freeInstallation: true,
     inStock: true,
@@ -213,7 +217,7 @@ export const tyreData: Tyre[] = [
   {
     id: "12",
     brand: "Apollo",
-    model: "Amazer 4G Life",
+    pattern: "Amazer 4G Life",
     size: "185/65 R15",
     type: "new",
     price: 4299,
@@ -221,7 +225,7 @@ export const tyreData: Tyre[] = [
     originalPrice: 4999,
     rating: 4.3,
     reviewCount: 187,
-    image: "/apollo-car-tyre.jpg",
+    imageUrl: "/apollo-car-tyre.jpg",
     features: ["Long Life", "Fuel Efficient", "Warranty 4 Years"],
     freeInstallation: true,
     inStock: true,
@@ -229,7 +233,7 @@ export const tyreData: Tyre[] = [
   {
     id: "13",
     brand: "CEAT",
-    model: "SecuraDrive",
+    pattern: "SecuraDrive",
     size: "185/65 R15",
     type: "new",
     price: 3999,
@@ -238,7 +242,7 @@ export const tyreData: Tyre[] = [
     originalPrice: 4799,
     rating: 4.2,
     reviewCount: 156,
-    image: "/ceat-car-tyre.jpg",
+    imageUrl: "/ceat-car-tyre.jpg",
     features: ["Wet Grip", "Silent", "Warranty 4 Years"],
     freeInstallation: true,
     inStock: true,
@@ -246,7 +250,7 @@ export const tyreData: Tyre[] = [
   {
     id: "14",
     brand: "Bridgestone",
-    model: "Ecopia EP150",
+    pattern: "Ecopia EP150",
     size: "185/65 R15",
     type: "new",
     price: 5299,
@@ -255,7 +259,7 @@ export const tyreData: Tyre[] = [
     originalPrice: 6299,
     rating: 4.7,
     reviewCount: 312,
-    image: "/bridgestone-car-tyre.jpg",
+    imageUrl: "/bridgestone-car-tyre.jpg",
     features: ["Eco Friendly", "Low Rolling Resistance", "Warranty 6 Years"],
     freeInstallation: true,
     inStock: true,
@@ -263,7 +267,7 @@ export const tyreData: Tyre[] = [
   {
     id: "15",
     brand: "MRF",
-    model: "ZLX",
+    pattern: "ZLX",
     size: "185/65 R15",
     type: "used",
     price: 1899,
@@ -273,7 +277,7 @@ export const tyreData: Tyre[] = [
     reviewCount: 89,
     condition: "Good",
     treadDepth: 6,
-    image: "/used-mrf-tyre.jpg",
+    imageUrl: "/used-mrf-tyre.jpg",
     features: ["70% Tread Left", "No Repairs", "30 Day Warranty"],
     freeInstallation: true,
     inStock: true,

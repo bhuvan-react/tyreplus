@@ -69,18 +69,21 @@ export function OtpModal({ isOpen, onClose, onSuccess, initialPhone, name }: Otp
     try {
       const response = await authService.verifyQuickOtp(phone, otpValue)
 
-      if (response.data.success) {
+      // Check if token exists (LoginResponse)
+      if (response.data.token) {
         // Create user from response or fallback
-        const user = response.data.user || {
-          id: `user_${Date.now()}`,
-          name: name || "Guest User",
+        // Backend UserInfo doesn't have mobile, but frontend store needs it
+        const user = {
+          ...response.data.user,
           mobile: phone,
+          // ensure fallback for mandatory fields if missing from backend (though backend shouldn't miss them)
+          name: response.data.user.name || name || "Guest User",
+          role: response.data.user.role || "customer"
         }
 
         localStorage.setItem("tyreplus_user", JSON.stringify(user))
-        if (response.data.token) {
-          localStorage.setItem("tyreplus_token", response.data.token)
-        }
+        localStorage.setItem("tyreplus_token", response.data.token)
+
         dispatch(setUser(user))
 
         setIsLoading(false)
@@ -91,10 +94,9 @@ export function OtpModal({ isOpen, onClose, onSuccess, initialPhone, name }: Otp
           onClose()
         }, 1500)
       } else {
-        console.error("OTP Verification failed:", response.data.message)
+        console.error("OTP Verification failed:", response.data)
         setIsLoading(false)
-        // Ideally show an error message to user
-        alert("Invalid OTP, please try again.") // Simple alert for now, can be improved
+        alert("Invalid OTP, please try again.")
       }
     } catch (error) {
       console.error("Failed to verify OTP", error)

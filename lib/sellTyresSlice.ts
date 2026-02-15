@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
+import { apiClient } from "./api-client"
 
 export interface SellTyresFormData {
     vehicleType: "2W" | "3W" | "4W" | ""
@@ -43,6 +44,7 @@ const initialState: SellTyresState = {
 }
 
 // Mock API call - simulates submission with 2-second delay
+// Real API call
 export const submitSellTyresForm = createAsyncThunk(
     "sellTyres/submitForm",
     async (formData: SellTyresFormData, { getState }) => {
@@ -53,14 +55,15 @@ export const submitSellTyresForm = createAsyncThunk(
             throw new Error("Phone number not verified")
         }
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 2000))
-
-        // Mock successful response
-        return {
-            success: true,
-            message: "Your tyre selling request has been submitted successfully!",
-            data: formData,
+        try {
+            const response = await apiClient.post("/sell-tyres/submit", formData)
+            return {
+                success: true,
+                message: "Your tyre selling request has been submitted successfully!",
+                data: response,
+            }
+        } catch (error: any) {
+            throw new Error(error.message || "Failed to submit form")
         }
     }
 )

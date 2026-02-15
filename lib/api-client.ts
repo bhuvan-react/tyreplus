@@ -59,3 +59,20 @@ export async function fetchWithMockFallback<T>(
         throw error
     }
 }
+// Simple wrapper for consistent API usage
+export const apiClient = {
+    get: <T>(endpoint: string, options?: RequestInit) => fetchWithMockFallback<T>(endpoint, { ...options, method: "GET" }),
+    post: <T>(endpoint: string, data?: any, options?: RequestInit) =>
+        fetchWithMockFallback<T>(endpoint, {
+            ...options,
+            method: "POST",
+            body: data ? JSON.stringify(data) : undefined,
+        }),
+    put: <T>(endpoint: string, data?: any, options?: RequestInit) =>
+        fetchWithMockFallback<T>(endpoint, {
+            ...options,
+            method: "PUT",
+            body: data ? JSON.stringify(data) : undefined,
+        }),
+    delete: <T>(endpoint: string, options?: RequestInit) => fetchWithMockFallback<T>(endpoint, { ...options, method: "DELETE" }),
+}

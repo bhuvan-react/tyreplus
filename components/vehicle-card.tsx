@@ -7,15 +7,13 @@ import { useRouter } from "next/navigation"
 interface VehicleCardProps {
     vehicle: {
         id: string
-        name: string
-        registration: string
-        year: number
+        vehicleName: string
+        registrationNumber: string
         tyreSize: string
-        lastService: string
         isPrimary: boolean
-        image: string
-        type?: "2w" | "3w" | "4w"
         make?: string
+        model?: string
+        variant?: string
     }
     onDelete?: (id: string) => void
     onEdit?: (vehicle: any) => void
@@ -26,7 +24,7 @@ export function VehicleCard({ vehicle, onDelete, onEdit }: VehicleCardProps) {
 
     const handleSearchTyres = () => {
         // Use make if available, otherwise try to extract from name
-        const make = vehicle.make || vehicle.name.split(" ")[0]
+        const make = vehicle.make || vehicle.vehicleName.split(" ")[0]
         router.push(`/search?make=${encodeURIComponent(make)}`)
     }
 
@@ -40,31 +38,27 @@ export function VehicleCard({ vehicle, onDelete, onEdit }: VehicleCardProps) {
 
             <div className="flex flex-col items-center mb-6">
                 <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-3 text-4xl">
-                    {/* Display icon based on vehicle type */}
-                    {vehicle.type === "2w" ? "🏍️" :
-                        vehicle.type === "3w" ? "🛺" :
-                            vehicle.type === "4w" ? "🚗" :
-                                vehicle.name.includes("Swift") ? "🚗" : "🚙"}
+                    {/* Display icon based on vehicle type - inferred or default */}
+                    🚗
                 </div>
-                <h3 className="text-lg font-bold text-[#1F2937]">{vehicle.name}</h3>
+                <h3 className="text-lg font-bold text-[#1F2937]">{vehicle.vehicleName}</h3>
+                <p className="text-sm text-gray-500">{vehicle.make} {vehicle.model}</p>
             </div>
 
             <div className="space-y-3 mb-6">
                 <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-500">Registration:</span>
-                    <span className="font-semibold text-[#1F2937] uppercase">{vehicle.registration}</span>
+                    <span className="font-semibold text-[#1F2937] uppercase">{vehicle.registrationNumber}</span>
                 </div>
-                <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-500">Year:</span>
-                    <span className="font-semibold text-[#1F2937]">{vehicle.year}</span>
-                </div>
+                {vehicle.variant && (
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-gray-500">Variant:</span>
+                        <span className="font-semibold text-[#1F2937]">{vehicle.variant}</span>
+                    </div>
+                )}
                 <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-500">Tyre Size:</span>
                     <span className="font-semibold text-[#1F2937]">{vehicle.tyreSize}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                    <span className="text-gray-500">Last Service:</span>
-                    <span className="font-semibold text-[#1F2937]">{vehicle.lastService}</span>
                 </div>
             </div>
 

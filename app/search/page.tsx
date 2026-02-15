@@ -56,7 +56,6 @@ function SearchContent() {
         const filters = {
           size: search.tyreSize || undefined,
           brand: selectedBrands.length > 0 ? selectedBrands[0] : undefined,
-          categoryId: searchParams.get("categoryId") || undefined,
         }
         const response = await tyreService.getAllTyres(filters)
         setTyres(response.data)
@@ -111,7 +110,7 @@ function SearchContent() {
 
     // Filter by type
     if (tyreType !== "all") {
-      result = result.filter((t) => t.type === tyreType)
+      result = result.filter((t) => (t.type || "new") === tyreType)
     }
 
     // Filter by brands
@@ -131,7 +130,7 @@ function SearchContent() {
 
     // Filter by rating
     if (minRating > 0) {
-      result = result.filter((t) => t.rating >= minRating)
+      result = result.filter((t) => (t.rating || 0) >= minRating)
     }
 
     // Sort
@@ -143,10 +142,10 @@ function SearchContent() {
         result.sort((a, b) => b.price - a.price)
         break
       case "rating":
-        result.sort((a, b) => b.rating - a.rating)
+        result.sort((a, b) => (b.rating || 0) - (a.rating || 0))
         break
       default:
-        result.sort((a, b) => b.reviewCount - a.reviewCount)
+        result.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0))
     }
 
     return result
@@ -168,7 +167,7 @@ function SearchContent() {
 
     // Filter by rating
     if (minRating > 0) {
-      result = result.filter((t) => t.rating >= minRating)
+      result = result.filter((t) => (t.rating || 0) >= minRating)
     }
 
     // Filter by tyre size
